@@ -24,7 +24,7 @@ public class OrderServiceController {
 
 	@PostMapping("/update")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item) {
-		int customerId = 1;
+		int customerId = 96;
 		try {
 			if (orderService.addOrUpdateOrderItem(item, customerId)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -52,7 +52,7 @@ public class OrderServiceController {
 	
 	@GetMapping("/active")
 	public ResponseEntity<FoodOrder> getActiveOrder() {
-		int customerId = 1;
+		int customerId = 96;
 		try {
 				return new ResponseEntity<>(orderService.getActiveOrder(customerId), HttpStatus.OK);
 		} catch (Exception e) {
