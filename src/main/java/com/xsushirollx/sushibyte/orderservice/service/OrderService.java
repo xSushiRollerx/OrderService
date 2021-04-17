@@ -2,6 +2,7 @@ package com.xsushirollx.sushibyte.orderservice.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,11 @@ public class OrderService {
 	MenuItemDAO mdao;
 
 	public boolean addOrUpdateOrderItem(OrderItem o, int customerId) {
+		o.setOrderId(fodao.findByCustomerIdAndState(customerId, 0).getId());
+
 		try {
 			o.setId(odao.findByOrderIdAndFoodId(fodao.findByCustomerIdAndState(customerId, 0).getId(), o.getFoodId())
 					.getId());
-
-			o.setOrderId(fodao.findByCustomerIdAndState(customerId, 0).getId());
 			odao.save(o);
 		} catch (NullPointerException e) {
 			odao.save(o);
@@ -149,6 +150,8 @@ public class OrderService {
 
 		} catch (NullPointerException e) {
 			item.setIsActive(2);
+		} catch (NoSuchElementException e) {
+			return item;
 		}
 		return item;
 	}

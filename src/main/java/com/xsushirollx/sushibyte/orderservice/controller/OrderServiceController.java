@@ -16,7 +16,7 @@ import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
-@Controller("/customer/order")
+@Controller("/customer")
 public class OrderServiceController {
 
 	@Autowired
@@ -32,13 +32,14 @@ public class OrderServiceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@PutMapping("/submit")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order) {
-		int customerId = 1;
+		int customerId = 96;
 		try {
 			if (orderService.submitOrder(order, customerId)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -46,6 +47,7 @@ public class OrderServiceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -56,16 +58,18 @@ public class OrderServiceController {
 		try {
 				return new ResponseEntity<>(orderService.getActiveOrder(customerId), HttpStatus.OK);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@GetMapping("/all")
 	public ResponseEntity<List<FoodOrder>> getAllOrders() {
-		int customerId = 1;
+		int customerId = 96;
 		try {
 				return new ResponseEntity<>(orderService.getAllOrders(customerId), HttpStatus.OK);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -79,6 +83,7 @@ public class OrderServiceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -92,6 +97,7 @@ public class OrderServiceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -23,7 +23,7 @@ public class FoodOrder {
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "state")
+	@Column(name = "order_state")
 	private Integer state;
 	
 	@Column(name = "customer_id")
