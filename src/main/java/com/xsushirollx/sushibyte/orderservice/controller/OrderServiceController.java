@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.xsushirollx.sushibyte.orderservice.model.Delivery;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
@@ -39,9 +40,22 @@ public class OrderServiceController {
 	
 	@PutMapping("/submit")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order) {
-		int customerId = 96;
 		try {
-			if (orderService.submitOrder(order, customerId)) {
+			if (orderService.submitOrder(order)) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			} else {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping("/delivery")
+	public ResponseEntity<?> updateDelivery(@RequestBody Delivery address) {
+		try {
+			if (orderService.updateDeliveryAdress(address)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

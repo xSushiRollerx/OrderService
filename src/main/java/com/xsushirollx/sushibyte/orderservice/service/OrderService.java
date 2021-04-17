@@ -7,9 +7,11 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xsushirollx.sushibyte.orderservice.dao.DeliveryDAO;
 import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dao.MenuItemDAO;
 import com.xsushirollx.sushibyte.orderservice.dao.OrderItemDAO;
+import com.xsushirollx.sushibyte.orderservice.model.Delivery;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.MenuItem;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
@@ -25,6 +27,9 @@ public class OrderService {
 
 	@Autowired
 	MenuItemDAO mdao;
+	
+	@Autowired
+	DeliveryDAO ddao;
 
 	public boolean addOrUpdateOrderItem(OrderItem o, int customerId) {
 		o.setOrderId(fodao.findByCustomerIdAndState(customerId, 0).getId());
@@ -70,20 +75,33 @@ public class OrderService {
 			return false;
 		}
 	}
+	
+	public boolean updateDeliveryAdress(Delivery address) {
+		try {
+			if (fodao.findById(address.getId()).get().getState() == 0) {
+				ddao.save(address);
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
-	public boolean submitOrder(FoodOrder order, int customerId) {
+	public boolean submitOrder(FoodOrder order) {
 		try {
 			// UPDATE FOODORDER SO DELIVERY IS GONE AND ADDRESS IS ADDED TO FOOD ORDER ALONG
 			// W/ DRIVERID
 			List<OrderItem> updated = updatedOrderItem(order.getOrderItems());
 			for (int i = 0; i < updated.size(); i++) {
-				addOrUpdateOrderItem(updated.get(i), customerId);
+				addOrUpdateOrderItem(updated.get(i), order.getCustomerId());
 			}
 		} catch (NullPointerException e) {
 			return false;
 		}
 
-		return updateOrderState(order) && createOrder(customerId);
+		return updateOrderState(order) && createOrder(order.getCustomerId());
 	}
 
 	public FoodOrder getActiveOrder(int userId) {

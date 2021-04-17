@@ -74,7 +74,7 @@ public class OrderServiceTests {
 		o.setCustomerId(1);
 		o.setId(3);
 		o.setState(0);
-		assert(!orderService.submitOrder(o, 0));
+		assert(!orderService.submitOrder(o));
 	}
 	
 	@Test
@@ -83,7 +83,7 @@ public class OrderServiceTests {
 		o.setCustomerId(2);
 		o.setId(4);
 		o.setState(0);
-		assert(!orderService.submitOrder(o, 0));
+		assert(!orderService.submitOrder(o));
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class OrderServiceTests {
 		o.setCustomerId(1);
 		o.setId(2);
 		o.setState(1);
-		assert(!orderService.submitOrder(o, 0));
+		assert(!orderService.submitOrder(o));
 	}
 	
 	@Test
