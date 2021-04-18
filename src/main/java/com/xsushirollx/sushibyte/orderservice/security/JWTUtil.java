@@ -1,16 +1,21 @@
 package com.xsushirollx.sushibyte.orderservice.security;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
+@Component
 public class JWTUtil {
 	
-	private String SECRET_KEY = "secret";
+	private String SECRET_KEY = "smoothstack";
 	
 	public String extractUserId(String token) {
 		return (extractClaim(token, Claims::getSubject));
@@ -33,9 +38,20 @@ public class JWTUtil {
 		return extractExpiration(token).before(new Date());
 	}
 	
+	private String createToken(Map<String, Object> claims, String subject) {
+		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 360 * 10))
+				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+		
+	}
+	
+	public String generateToken(String id) {
+		Map<String, Object> claims = new HashMap<>();
+		return createToken(claims, id);
+	}
 	
 	public boolean validateToken(String token, UserDetails user) {
-		final String userId = extractUserId(token);
+//		final String userId = extractUserId(token);
 		return (!isTokenExpired(token));
 	}
 	
