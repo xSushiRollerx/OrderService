@@ -101,11 +101,6 @@ public class OrderServiceTests {
 	}
 	
 	@Test
-	public void getActiveOrderDNEHP() {
-		assert(orderService.getActiveOrder(7).getCustomerId() == 7);
-	}
-	
-	@Test
 	public void getAllOrdersHP() {
 		assert(orderService.getAllOrders(1).size() > 0);
 	}

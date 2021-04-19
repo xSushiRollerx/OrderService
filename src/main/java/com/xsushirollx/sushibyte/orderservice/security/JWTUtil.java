@@ -50,7 +50,7 @@ public class JWTUtil {
 		return createToken(claims, id);
 	}
 	
-	public boolean validateToken(String token, UserDetails user) {
+	public boolean validateToken(String token) {
 //		final String userId = extractUserId(token);
 		return (!isTokenExpired(token));
 	}

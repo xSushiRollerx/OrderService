@@ -40,6 +40,14 @@ public class FoodOrder {
 	@Column(name = "stripe")
 	private Integer stripe;
 
+	public FoodOrder() {
+	}
+	
+	public FoodOrder(Integer id, Integer state) {
+		this.id = id;
+		this.state = state;
+	}
+
 	public Integer getId() {
 		return id;
 	}

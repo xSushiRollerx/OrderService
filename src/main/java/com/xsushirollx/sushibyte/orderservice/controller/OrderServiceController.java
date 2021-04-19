@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -35,8 +36,7 @@ public class OrderServiceController {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
-			
-			if (orderService.addOrUpdateOrderItem(item, Integer.parseInt(util.extractUserId(token.substring(7).trim())))) {
+			if (orderService.addOrUpdateOrderItem(item, (Integer) SecurityContextHolder.getContext().getAuthentication().getPrincipal())) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
@@ -51,7 +51,11 @@ public class OrderServiceController {
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
+		
 		try {
+			if (!hasPermission(order)) {
+				return new ResponseEntity<>("Cannot Add Order Item", headers, HttpStatus.FORBIDDEN);
+			}
 			if (orderService.submitOrder(order)) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
@@ -69,6 +73,9 @@ public class OrderServiceController {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
+			if (!hasPermission(address)) {
+				return new ResponseEntity<>("Cannot Add Delivery Address", headers, HttpStatus.FORBIDDEN);
+			}
 			if (orderService.updateDeliveryAdress(address)) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
@@ -84,9 +91,8 @@ public class OrderServiceController {
 	public ResponseEntity<FoodOrder> getActiveOrder(@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
-		int customerId = 96;
 		try {
-				return new ResponseEntity<FoodOrder>(orderService.getActiveOrder(customerId), headers,  HttpStatus.OK);
+				return new ResponseEntity<FoodOrder>(orderService.getActiveOrder(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal())), headers,  HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -97,9 +103,8 @@ public class OrderServiceController {
 	public ResponseEntity<List<FoodOrder>> getAllOrders(@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
-		int customerId = 96;
 		try {
-				return new ResponseEntity<>(orderService.getAllOrders(customerId), headers,  HttpStatus.OK);
+				return new ResponseEntity<List<FoodOrder>>(orderService.getAllOrders(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal())), headers,  HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -111,6 +116,10 @@ public class OrderServiceController {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
+			if (!hasPermission(item)) {
+				return new ResponseEntity<>("Cannot Add Order Item", headers, HttpStatus.FORBIDDEN);
+			}
+			
 			if (orderService.deleteOrderItem(item)) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
@@ -127,6 +136,9 @@ public class OrderServiceController {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
+			if (!hasPermission(order)) {
+				return new ResponseEntity<>("Cannot Cancel Order", headers, HttpStatus.FORBIDDEN);
+			}
 			if (orderService.cancelOrder(order)) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
@@ -138,4 +150,38 @@ public class OrderServiceController {
 		}
 	}
 	
+	//<--------------------------------------------------------- AUTHORIZATION -------------------------------------------------------------->
+	
+	private boolean hasPermission(FoodOrder o) {
+		@SuppressWarnings("unchecked")
+		List<FoodOrder> orders = (List<FoodOrder>) SecurityContextHolder.getContext().getAuthentication().getDetails();
+		for (int i = 0; i < orders.size(); i++) {
+			if (orders.get(i).getId() == o.getId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean hasPermission(OrderItem o) {
+		@SuppressWarnings("unchecked")
+		List<FoodOrder> orders = (List<FoodOrder>) SecurityContextHolder.getContext().getAuthentication().getDetails();
+		for (int i = 0; i < orders.size(); i++) {
+			if (orders.get(i).getId() == o.getOrderId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean hasPermission(Delivery address) {
+		@SuppressWarnings("unchecked")
+		List<FoodOrder> orders = (List<FoodOrder>) SecurityContextHolder.getContext().getAuthentication().getDetails();
+		for (int i = 0; i < orders.size(); i++) {
+			if (orders.get(i).getId() == address.getId()) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

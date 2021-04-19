@@ -1,3 +1,7 @@
+insert into user(id, role) values (1, 1);
+insert into user(id, role) values (2,1);
+insert into user(id, role) values (5,1);
+
 insert into food_order(id, customer_id, order_state) values (1, 1, 5);
 insert into food_order(id, customer_id, order_state) values (2, 1, 1);
 insert into food_order(id, customer_id, order_state) values (3, 1, 0);
