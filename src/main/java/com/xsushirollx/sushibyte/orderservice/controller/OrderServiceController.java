@@ -24,7 +24,7 @@ import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
-@Controller("/customer")
+@Controller("/customer/order")
 public class OrderServiceController {
 
 	@Autowired

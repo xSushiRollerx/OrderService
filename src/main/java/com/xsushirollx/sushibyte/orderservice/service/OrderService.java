@@ -3,6 +3,8 @@ package com.xsushirollx.sushibyte.orderservice.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class OrderService {
 	
 	@Autowired
 	DeliveryDAO ddao;
+
+	private Logger log = Logger.getLogger("OrderService");
 
 	public boolean addOrUpdateOrderItem(OrderItem o, int customerId) {
 		o.setOrderId(fodao.findByCustomerIdAndState(customerId, 0).getId());
@@ -91,11 +95,15 @@ public class OrderService {
 
 	public boolean submitOrder(FoodOrder order) {
 		try {
-			// UPDATE FOODORDER SO DELIVERY IS GONE AND ADDRESS IS ADDED TO FOOD ORDER ALONG
-			// W/ DRIVERID
-			List<OrderItem> updated = updatedOrderItem(order.getOrderItems());
-			for (int i = 0; i < updated.size(); i++) {
-				addOrUpdateOrderItem(updated.get(i), order.getCustomerId());
+			if (fodao.findById(order.getId()).get().getState() != 0 || fodao.findById(order.getId()).get().getOrderItems().size() == 0) {
+				return false;
+			}
+			List<OrderItem> items = updatedOrderItem(fodao.findById(order.getId()).get().getOrderItems());
+			for (int i = 0; i < items.size(); i++) {
+				OrderItem o = items.get(i);
+				o.setOrderId(order.getId());
+				log.log(Level.INFO, "OrderItem Before Submission: " + o.toString());
+				odao.save(o);
 			}
 		} catch (NullPointerException e) {
 			return false;
@@ -165,6 +173,7 @@ public class OrderService {
 			item.setName(mitem.getName());
 			item.setIsActive(mitem.getIsActive());
 			item.setPrice(mitem.getPrice());
+			log.log(Level.INFO, "OrderItem After Update: " + item.toString());
 
 		} catch (NullPointerException e) {
 			item.setIsActive(2);
@@ -180,6 +189,7 @@ public class OrderService {
 
 		List<OrderItem> updatedList = new ArrayList<>();
 		for (int i = 0; i < orderList.size(); i++) {
+			log.log(Level.INFO, "OrderItem Before Update: " + orderList.get(i).toString());
 			updatedList.add(updatedOrderItem(orderList.get(i)));
 		}
 		return updatedList;

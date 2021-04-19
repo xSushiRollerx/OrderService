@@ -27,10 +27,10 @@ public class OrderItem {
 	@Column(name = "count")
 	private Integer quantity;
 	
-	@Transient
+	@Column(name = "price")
 	private Float price;
 	
-	@Transient
+	@Column(name = "food_item_name")
 	private String name;
 	
 	@Transient
@@ -90,6 +90,12 @@ public class OrderItem {
 
 	public void setIsActive(Integer isActive) {
 		this.isActive = isActive;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" + orderId + ", quantity=" + quantity
+				+ ", price=" + price + ", name=" + name + ", isActive=" + isActive + "]";
 	}
 
 	@Override
