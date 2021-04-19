@@ -24,7 +24,7 @@ public class CustomerAuthenticationToken implements Authentication {
 
 	@Override
 	public String getName() {
-		return null;
+		return customer.getId().toString();
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class CustomerAuthenticationToken implements Authentication {
 	}
 
 	@Override
-	public Integer getPrincipal() {
-		return customer.getId();
+	public Customer getPrincipal() {
+		return customer;
 	}
 
 	@Override

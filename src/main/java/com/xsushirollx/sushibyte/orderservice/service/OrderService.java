@@ -76,7 +76,7 @@ public class OrderService {
 		}
 	}
 	
-	public boolean updateDeliveryAdress(Delivery address) {
+	public boolean updateDeliveryAddress(Delivery address) {
 		try {
 			if (fodao.findById(address.getId()).get().getState() == 0) {
 				ddao.save(address);
@@ -158,7 +158,7 @@ public class OrderService {
 		}
 
 	}
-
+//<------------------------------------------ HELPER METHODS ------------------------------------------------------>
 	private OrderItem updatedOrderItem(OrderItem item) {
 		try {
 			MenuItem mitem = mdao.findById(item.getFoodId()).get();

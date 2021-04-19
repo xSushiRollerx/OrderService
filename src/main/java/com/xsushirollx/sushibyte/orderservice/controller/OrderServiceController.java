@@ -1,6 +1,8 @@
 package com.xsushirollx.sushibyte.orderservice.controller;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,12 +33,14 @@ public class OrderServiceController {
 	@Autowired
 	JWTUtil util;
 
+	private Logger log = Logger.getLogger("Order Controller");
+
 	@PostMapping("/update")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
-			if (orderService.addOrUpdateOrderItem(item, (Integer) SecurityContextHolder.getContext().getAuthentication().getPrincipal())) {
+			if (orderService.addOrUpdateOrderItem(item, Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName()))) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
@@ -76,7 +80,7 @@ public class OrderServiceController {
 			if (!hasPermission(address)) {
 				return new ResponseEntity<>("Cannot Add Delivery Address", headers, HttpStatus.FORBIDDEN);
 			}
-			if (orderService.updateDeliveryAdress(address)) {
+			if (orderService.updateDeliveryAddress(address)) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
@@ -92,7 +96,7 @@ public class OrderServiceController {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
-				return new ResponseEntity<FoodOrder>(orderService.getActiveOrder(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal())), headers,  HttpStatus.OK);
+				return new ResponseEntity<FoodOrder>(orderService.getActiveOrder(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName())), headers,  HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -104,9 +108,11 @@ public class OrderServiceController {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
 		try {
-				return new ResponseEntity<List<FoodOrder>>(orderService.getAllOrders(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal())), headers,  HttpStatus.OK);
+				return new ResponseEntity<List<FoodOrder>>(orderService.getAllOrders(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName())), headers,  HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
+			log.log(Level.INFO, SecurityContextHolder.getContext().getAuthentication().getClass().toString());
+			log.log(Level.INFO, (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

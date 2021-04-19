@@ -58,6 +58,11 @@ public class Customer  {
 	public void setOrders(List<FoodOrder> order) {
 		this.orders = order;
 	}
+
+	@Override
+	public String toString() {
+		return "Customer [id=" + id + ", role=" + role + ", orders=" + orders + "]";
+	}
 	
 	
 

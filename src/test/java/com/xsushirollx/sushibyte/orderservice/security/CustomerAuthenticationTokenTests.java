@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.springframework.security.core.GrantedAuthority;
 
 import com.xsushirollx.sushibyte.orderservice.model.Customer;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
@@ -30,7 +29,7 @@ public class CustomerAuthenticationTokenTests {
 	
 	@Test 
 	public void getPrincipal() {
-		assert(token.getPrincipal() == 96);
+		assert(Integer.parseInt(token.getName()) == 96);
 	}
 	
 	@Test
@@ -40,7 +39,7 @@ public class CustomerAuthenticationTokenTests {
 			System.out.println("Orders: " + orders.get(i).getId());
 		}
 		assert(orders.get(0).getId() == 1);
-		assert(orders.get(0).getId() == 87);
+		assert(orders.get(1).getId() == 87);
 	}
 
 	

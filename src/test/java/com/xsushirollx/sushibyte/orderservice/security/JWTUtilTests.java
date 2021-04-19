@@ -2,7 +2,6 @@ package com.xsushirollx.sushibyte.orderservice.security;
 
 import org.junit.jupiter.api.Test;
 
-//@SpringBootTest
 public class JWTUtilTests {
 	
 	JWTUtil util = new JWTUtil();
