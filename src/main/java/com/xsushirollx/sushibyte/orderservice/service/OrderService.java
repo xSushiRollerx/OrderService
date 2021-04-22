@@ -12,14 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.xsushirollx.sushibyte.orderservice.dao.DeliveryDAO;
-import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
-import com.xsushirollx.sushibyte.orderservice.dao.MenuItemDAO;
-import com.xsushirollx.sushibyte.orderservice.dao.OrderItemDAO;
-import com.xsushirollx.sushibyte.orderservice.model.Delivery;
-import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
-import com.xsushirollx.sushibyte.orderservice.model.MenuItem;
-import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
+import com.xsushirollx.sushibyte.orderservice.dao.*;
+import com.xsushirollx.sushibyte.orderservice.model.*;
+
 
 @Service
 public class OrderService {
@@ -45,7 +40,7 @@ public class OrderService {
 			o.setId(odao.findByOrderIdAndFoodId(fodao.findByCustomerIdAndState(customerId, 0).getId(), o.getFoodId())
 					.getId());
 			odao.save(o);
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			odao.save(o);
 		}
 		return true;
@@ -88,7 +83,7 @@ public class OrderService {
 			} else {
 				return false;
 			}
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			return false;
 		}
 	}
@@ -101,14 +96,14 @@ public class OrderService {
 			} else {
 				return false;
 			}
-		} catch (Exception e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			return false;
 		}
 	}
 
 	public boolean submitOrder(FoodOrder order) {
 		try {
-			if (fodao.findById(order.getId()).get().getState() != 0 || fodao.findById(order.getId()).get().getOrderItems().size() == 0) {
+			if (fodao.findById(order.getId()).get().getState() != 0 | fodao.findById(order.getId()).get().getOrderItems().size() == 0) {
 				return false;
 			}
 			List<OrderItem> items = updatedOrderItem(fodao.findById(order.getId()).get().getOrderItems());
@@ -118,7 +113,7 @@ public class OrderService {
 				log.log(Level.INFO, "OrderItem Before Submission: " + o.toString());
 				odao.save(o);
 			}
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			return false;
 		}
 
@@ -131,7 +126,7 @@ public class OrderService {
 			FoodOrder order = fodao.findByCustomerIdAndState(userId, 0);
 			order.setOrderItems(updatedOrderItem(order.getOrderItems()));
 			return order;
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			createOrder(userId);
 			return fodao.findByCustomerIdAndState(userId, 0);
 		}
@@ -146,7 +141,7 @@ public class OrderService {
 			}
 			return orders;
 
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			return null;
 		}
 	}
@@ -190,12 +185,13 @@ public class OrderService {
 			} else {
 				return false;
 			}
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			return false;
 		}
 
 	}
 //<------------------------------------------ HELPER METHODS ------------------------------------------------------>
+	@SuppressWarnings("finally")
 	private OrderItem updatedOrderItem(OrderItem item) {
 		try {
 			MenuItem mitem = mdao.findById(item.getFoodId()).get();
@@ -204,12 +200,11 @@ public class OrderService {
 			item.setPrice(mitem.getPrice());
 			log.log(Level.INFO, "OrderItem After Update: " + item.toString());
 
-		} catch (NullPointerException e) {
+		} catch (NoSuchElementException | NullPointerException e) {
 			item.setIsActive(2);
-		} catch (NoSuchElementException e) {
+		} finally {
 			return item;
 		}
-		return item;
 	}
 
 	private List<OrderItem> updatedOrderItem(List<OrderItem> orderList) {

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.xsushirollx.sushibyte.orderservice.model.Customer;
@@ -28,7 +30,8 @@ import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
-@Controller(value = "/admin/order")
+@Controller
+@RequestMapping("/admin/order")
 public class AdminOrderServiceController {
 
 	@Autowired
@@ -40,7 +43,7 @@ public class AdminOrderServiceController {
 	private Logger log = Logger.getLogger("Order Controller");
 
 	// DONE
-	@PostMapping(value = "/update-order")
+	@PostMapping(value = "/update")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
@@ -60,7 +63,7 @@ public class AdminOrderServiceController {
 	}
 
 	// DONE
-	@PutMapping(value ="/submit-order")
+	@PutMapping(value ="/submit")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
@@ -81,7 +84,7 @@ public class AdminOrderServiceController {
 	}
 
 	// DONE
-	@PutMapping(value = "/delivery-order")
+	@PutMapping(value = "/delivery")
 	public ResponseEntity<?> updateDelivery(@RequestBody Delivery address,
 			@RequestHeader("Authorization") String token) {
 
@@ -103,7 +106,7 @@ public class AdminOrderServiceController {
 	}
 
 	// DONE
-	@PutMapping(value = "/state-order")
+	@PutMapping(value = "/state")
 	public ResponseEntity<?> updateOrderState(@RequestBody FoodOrder order,
 			@RequestHeader("Authorization") String token) {
 
@@ -125,7 +128,7 @@ public class AdminOrderServiceController {
 	}
 
 	// DONE
-	@GetMapping(value = "/search-order")
+	@GetMapping(value = "/search")
 	public ResponseEntity<List<FoodOrder>> searchAllOrders(@RequestHeader("Authorization") String token,
 			@RequestParam Map<String, String> params) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -144,7 +147,8 @@ public class AdminOrderServiceController {
 	}
 
 	// DONE
-	@DeleteMapping(value = "/remove-order")
+	@PreAuthorize("2 == authentication.principal.role")
+	@DeleteMapping(value = "/remove")
 	public ResponseEntity<?> deleteOrderItem(@RequestBody OrderItem item,
 			@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -165,7 +169,8 @@ public class AdminOrderServiceController {
 	}
 
 	// DONE
-	@PutMapping(value = "/cancel-order")
+	@PreAuthorize("2 == authentication.principal.role")
+	@PutMapping(value = "/cancel")
 	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);

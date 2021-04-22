@@ -17,13 +17,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.xsushirollx.sushibyte.orderservice.model.Delivery;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
-@Controller(value = "/customer/order")
+@Controller
+@RequestMapping("/customer/order")
 public class CustomerOrderServiceController {
 
 	@Autowired
@@ -33,8 +35,7 @@ public class CustomerOrderServiceController {
 
 	@PostMapping(value = "/update")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 	
 		try {
 			if (orderService.addOrUpdateOrderItem(item,
@@ -51,8 +52,7 @@ public class CustomerOrderServiceController {
 
 	@PutMapping(value = "/submit")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 
 		try {
 			if (!hasPermission(order)) {
@@ -73,8 +73,7 @@ public class CustomerOrderServiceController {
 	public ResponseEntity<?> updateDelivery(@RequestBody Delivery address,
 			@RequestHeader("Authorization") String token) {
 
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
 			if (!hasPermission(address)) {
 				return new ResponseEntity<>("Cannot Add Delivery Address", headers, HttpStatus.FORBIDDEN);
@@ -92,8 +91,7 @@ public class CustomerOrderServiceController {
 
 	@GetMapping(value = "/active")
 	public ResponseEntity<FoodOrder> getActiveOrder(@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
 			return new ResponseEntity<FoodOrder>(
 					orderService.getActiveOrder(Integer
@@ -107,8 +105,7 @@ public class CustomerOrderServiceController {
 
 	@GetMapping(value = "/all")
 	public ResponseEntity<List<FoodOrder>> getAllOrders(@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
 			return new ResponseEntity<List<FoodOrder>>(
 					orderService.getAllOrders(Integer
@@ -125,8 +122,7 @@ public class CustomerOrderServiceController {
 	@DeleteMapping(value = "/remove")
 	public ResponseEntity<?> deleteOrderItem(@RequestBody OrderItem item,
 			@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
 			if (!hasPermission(item)) {
 				return new ResponseEntity<>("Cannot Add Order Item", headers, HttpStatus.FORBIDDEN);
@@ -145,8 +141,7 @@ public class CustomerOrderServiceController {
 
 	@PutMapping(value = "/cancel")
 	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
 			if (!hasPermission(order)) {
 				return new ResponseEntity<>("Cannot Cancel Order", headers, HttpStatus.FORBIDDEN);
@@ -160,6 +155,16 @@ public class CustomerOrderServiceController {
 			e.printStackTrace();
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	// <--------------------------------------------------------- HEADERS -------------------------------------------------------------->
+	private MultiValueMap<String, String> getHeaders(String token) {
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", token);
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
+		headers.add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+		return headers;
 	}
 
 	// <--------------------------------------------------------- AUTHORIZATION -------------------------------------------------------------->
