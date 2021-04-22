@@ -2,11 +2,14 @@ package com.xsushirollx.sushibyte.orderservice.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.xsushirollx.sushibyte.orderservice.dao.DeliveryDAO;
@@ -46,6 +49,16 @@ public class OrderService {
 			odao.save(o);
 		}
 		return true;
+	}
+	
+	public boolean addOrUpdateOrderItem(OrderItem o) {
+
+		if (odao.existsByOrderId(o.getOrderId())) {
+			odao.save(o);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean createOrder(int customerId) {
@@ -136,6 +149,22 @@ public class OrderService {
 		} catch (NullPointerException e) {
 			return null;
 		}
+	}
+	
+	public List<FoodOrder> searchAllOrders(Map<String, String> params) {
+		List<FoodOrder> resultOrders = new ArrayList<FoodOrder>();
+		for (int i = 0; i < fodao.findAll(PageRequest.of(i, 100)).getTotalPages(); i++) {
+			Page<FoodOrder> currentItems = fodao.findAll(PageRequest.of(i, 100));
+			if (params.containsKey("state")) {
+				resultOrders.addAll(currentItems.filter(o -> o.getState() == Integer.parseInt(params.get("state"))).toList());
+			}
+			
+			if (params.containsKey("refunded")) {
+				resultOrders.addAll(currentItems.filter(o -> o.getRefunded() == Integer.parseInt(params.get("refunded"))).toList());
+			}
+			
+		}
+		return resultOrders;
 	}
 
 	public boolean deleteOrderItem(OrderItem item) {

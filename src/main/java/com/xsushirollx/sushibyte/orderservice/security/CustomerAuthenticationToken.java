@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.xsushirollx.sushibyte.orderservice.model.Customer;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
@@ -31,24 +32,21 @@ public class CustomerAuthenticationToken implements Authentication {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add(new GrantedAuthority() {
 
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getAuthority() {
-				switch (customer.getRole()) {
-				case 1:
-					return "CUSTOMER";
-				case 2:
-					return "ADMINISTRATOR";
-				case 3:
-					return "DRIVER";
-				default:
-					return "NONE";
-				}
-			}
-		});
+		switch (customer.getRole()) {
+		case 1:
+			authorities.add(new SimpleGrantedAuthority("CUSTOMER"));
+			break;
+		case 2:
+			authorities.add(new SimpleGrantedAuthority("ADMINISTRATOR"));
+			break;
+		case 3:
+			authorities.add(new SimpleGrantedAuthority("DRIVER"));
+			break;
+		default:
+			authorities.add(new SimpleGrantedAuthority("NONE"));
+			break;
+		}
 		return authorities;
 
 	}

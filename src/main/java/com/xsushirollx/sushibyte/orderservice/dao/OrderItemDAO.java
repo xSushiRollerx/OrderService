@@ -7,6 +7,8 @@ import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 
 @Repository
 public interface OrderItemDAO extends JpaRepository<OrderItem, Integer> {
-	OrderItem findByOrderIdAndFoodId(int orderId, int foodId);
+	public OrderItem findByOrderIdAndFoodId(int orderId, int foodId);
+
+	public boolean existsByOrderId(int orderId);
 
 }

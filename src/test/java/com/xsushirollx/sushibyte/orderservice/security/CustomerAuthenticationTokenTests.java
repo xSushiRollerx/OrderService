@@ -2,11 +2,13 @@ package com.xsushirollx.sushibyte.orderservice.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.xsushirollx.sushibyte.orderservice.model.Customer;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
@@ -15,7 +17,7 @@ import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 public class CustomerAuthenticationTokenTests {
 	
 	CustomerAuthenticationToken token;
-			
+	Logger log = Logger.getLogger("CustomerAuthenticationTokenTests");		
 	@BeforeAll
 	public void setUp() {
 		Customer c =  new Customer(96, 1);
@@ -31,6 +33,13 @@ public class CustomerAuthenticationTokenTests {
 	public void getPrincipal() {
 		assert(Integer.parseInt(token.getName()) == 96);
 	}
+	
+	@Test 
+	public void getAuthorities() {
+		System.out.println("Granted Authority " + token.getAuthorities().toArray()[0].toString());
+		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("CUSTOMER")));
+	}
+	
 	
 	@Test
 	public void getDetails() {
