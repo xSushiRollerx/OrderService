@@ -9,6 +9,6 @@ public class JWTUtilTests {
 	@Test
 	public void extractUserId() {
 		System.out.println(util.generateToken("96"));
-		assert(Integer.parseInt(util.extractUserId(util.generateToken("96"))) == 96);
+		assert(Integer.parseInt(util.extractUserId(util.generateToken("98"))) == 98);
 	}
 }

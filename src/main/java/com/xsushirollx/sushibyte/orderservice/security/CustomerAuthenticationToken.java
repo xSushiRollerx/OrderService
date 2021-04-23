@@ -32,7 +32,10 @@ public class CustomerAuthenticationToken implements Authentication {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
-
+		if (customer == null) {
+			authorities.add(new SimpleGrantedAuthority("NONE"));
+			return authorities;
+		}
 		switch (customer.getRole()) {
 		case 1:
 			authorities.add(new SimpleGrantedAuthority("CUSTOMER"));

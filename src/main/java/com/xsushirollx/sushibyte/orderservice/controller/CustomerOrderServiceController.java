@@ -7,10 +7,12 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
+@CrossOrigin(origins = "http://localhost:3000/")
 @Controller
 @RequestMapping("/customer/order")
 public class CustomerOrderServiceController {
@@ -34,6 +37,7 @@ public class CustomerOrderServiceController {
 	private Logger log = Logger.getLogger("Order Controller");
 
 	@PostMapping(value = "/update")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 	
@@ -51,6 +55,7 @@ public class CustomerOrderServiceController {
 	}
 
 	@PutMapping(value = "/submit")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 
@@ -70,6 +75,7 @@ public class CustomerOrderServiceController {
 	}
 
 	@PutMapping(value = "/delivery")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> updateDelivery(@RequestBody Delivery address,
 			@RequestHeader("Authorization") String token) {
 
@@ -90,8 +96,13 @@ public class CustomerOrderServiceController {
 	}
 
 	@GetMapping(value = "/active")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<FoodOrder> getActiveOrder(@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = getHeaders(token);
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", token);
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
+		headers.add("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Access-Control-Allow-Headers, Authorization");
 		try {
 			return new ResponseEntity<FoodOrder>(
 					orderService.getActiveOrder(Integer
@@ -104,8 +115,13 @@ public class CustomerOrderServiceController {
 	}
 
 	@GetMapping(value = "/all")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<List<FoodOrder>> getAllOrders(@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = getHeaders(token);
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", token);
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
+		headers.add("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 		try {
 			return new ResponseEntity<List<FoodOrder>>(
 					orderService.getAllOrders(Integer
@@ -120,6 +136,7 @@ public class CustomerOrderServiceController {
 	}
 
 	@DeleteMapping(value = "/remove")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> deleteOrderItem(@RequestBody OrderItem item,
 			@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
@@ -140,6 +157,7 @@ public class CustomerOrderServiceController {
 	}
 
 	@PutMapping(value = "/cancel")
+	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
@@ -161,9 +179,12 @@ public class CustomerOrderServiceController {
 	private MultiValueMap<String, String> getHeaders(String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-		headers.add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+//		headers.add("Access-Control-Allow-Origin", "*");
+//		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, PUT, OPTIONS");
+//		headers.add("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+//		headers.add("x-content-type-options","nosniff");
+//		headers.add("x-frame-options", "SAMEORIGIN");
+//		headers.add("x-xss-protection", "1"); 
 		return headers;
 	}
 
