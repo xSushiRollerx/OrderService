@@ -1,8 +1,8 @@
 package com.xsushirollx.sushibyte.orderservice.controller;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +25,6 @@ import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
-@CrossOrigin(origins = "http://localhost:3000/")
 @Controller
 @RequestMapping("/customer/order")
 public class CustomerOrderServiceController {
@@ -34,7 +32,7 @@ public class CustomerOrderServiceController {
 	@Autowired
 	OrderService orderService;
 
-	private Logger log = Logger.getLogger("Order Controller");
+	//private Logger log = Logger.getLogger("Order Controller");
 
 	@PostMapping(value = "/update")
 	@PreAuthorize("1 == authentication.principal.role")
@@ -98,12 +96,11 @@ public class CustomerOrderServiceController {
 	@GetMapping(value = "/active")
 	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<FoodOrder> getActiveOrder(@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-		headers.add("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Access-Control-Allow-Headers, Authorization");
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
+			if (!hasPermission()) {
+				return new ResponseEntity<>(headers, HttpStatus.FORBIDDEN);
+			}
 			return new ResponseEntity<FoodOrder>(
 					orderService.getActiveOrder(Integer
 							.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName())),
@@ -117,20 +114,17 @@ public class CustomerOrderServiceController {
 	@GetMapping(value = "/all")
 	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<List<FoodOrder>> getAllOrders(@RequestHeader("Authorization") String token) {
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("Authorization", token);
-		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS");
-		headers.add("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
+			if (!hasPermission()) {
+				return new ResponseEntity<>(headers, HttpStatus.FORBIDDEN);
+			}
 			return new ResponseEntity<List<FoodOrder>>(
 					orderService.getAllOrders(Integer
 							.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName())),
 					headers, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.log(Level.INFO, SecurityContextHolder.getContext().getAuthentication().getClass().toString());
-			log.log(Level.INFO, (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -179,12 +173,6 @@ public class CustomerOrderServiceController {
 	private MultiValueMap<String, String> getHeaders(String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", token);
-//		headers.add("Access-Control-Allow-Origin", "*");
-//		headers.add("Access-Control-Allow-Methods", "DELETE, POST, GET, PUT, OPTIONS");
-//		headers.add("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-//		headers.add("x-content-type-options","nosniff");
-//		headers.add("x-frame-options", "SAMEORIGIN");
-//		headers.add("x-xss-protection", "1"); 
 		return headers;
 	}
 
@@ -234,6 +222,15 @@ public class CustomerOrderServiceController {
 				}
 			}
 			return false;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	private boolean hasPermission() {
+		try {
+			Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName());
+			return true;
 		} catch (Exception e) {
 			return false;
 		}

@@ -191,20 +191,19 @@ public class OrderService {
 
 	}
 //<------------------------------------------ HELPER METHODS ------------------------------------------------------>
-	@SuppressWarnings("finally")
+
 	private OrderItem updatedOrderItem(OrderItem item) {
 		try {
 			MenuItem mitem = mdao.findById(item.getFoodId()).get();
 			item.setName(mitem.getName());
 			item.setIsActive(mitem.getIsActive());
 			item.setPrice(mitem.getPrice());
-			log.log(Level.INFO, "OrderItem After Update: " + item.toString());
 
 		} catch (NoSuchElementException | NullPointerException e) {
 			item.setIsActive(2);
-		} finally {
-			return item;
-		}
+		} 	
+		return item;
+
 	}
 
 	private List<OrderItem> updatedOrderItem(List<OrderItem> orderList) {
@@ -213,7 +212,6 @@ public class OrderService {
 
 		List<OrderItem> updatedList = new ArrayList<>();
 		for (int i = 0; i < orderList.size(); i++) {
-			log.log(Level.INFO, "OrderItem Before Update: " + orderList.get(i).toString());
 			updatedList.add(updatedOrderItem(orderList.get(i)));
 		}
 		return updatedList;
