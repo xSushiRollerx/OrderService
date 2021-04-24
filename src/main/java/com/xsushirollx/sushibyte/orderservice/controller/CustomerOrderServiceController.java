@@ -1,8 +1,6 @@
 package com.xsushirollx.sushibyte.orderservice.controller;
 
 import java.util.List;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,14 +30,16 @@ public class CustomerOrderServiceController {
 	@Autowired
 	OrderService orderService;
 
-	//private Logger log = Logger.getLogger("Order Controller");
-
 	@PostMapping(value = "/update")
 	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 	
 		try {
+			if (!hasPermission()) {
+				return new ResponseEntity<>("Cannot Add Or Update Order Items", headers, HttpStatus.FORBIDDEN);
+			}
+			
 			if (orderService.addOrUpdateOrderItem(item,
 					Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName()))) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
