@@ -1,6 +1,8 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -8,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class OrderService {
 	
 	@Autowired
 	DeliveryDAO ddao;
+	
+	@Autowired
+	CustomerDAO cdao;
 
 	private Logger log = Logger.getLogger("OrderService");
 
@@ -48,12 +52,14 @@ public class OrderService {
 	
 	public boolean addOrUpdateOrderItem(OrderItem o) {
 
-		if (odao.existsByOrderId(o.getOrderId())) {
+		try {
+			o.setId(odao.findByOrderIdAndFoodId(o.getOrderId(), o.getFoodId())
+					.getId());
 			odao.save(o);
-			return true;
-		} else {
-			return false;
+		} catch (NoSuchElementException | NullPointerException e) {
+			odao.save(o);
 		}
+		return true;
 	}
 
 	public boolean createOrder(int customerId) {
@@ -147,19 +153,73 @@ public class OrderService {
 	}
 	
 	public List<FoodOrder> searchAllOrders(Map<String, String> params) {
+			
 		List<FoodOrder> resultOrders = new ArrayList<FoodOrder>();
-		for (int i = 0; i < fodao.findAll(PageRequest.of(i, 100)).getTotalPages(); i++) {
-			Page<FoodOrder> currentItems = fodao.findAll(PageRequest.of(i, 100));
+		
+	
+		for (int i = 0; i < (params.containsKey("customer") ? 1 : fodao.findAll(PageRequest.of(i, 100)).getTotalPages()); i++) {
+			List<FoodOrder> currentItems;
+			if (params.containsKey("customer")) {
+				currentItems = searchByUser(params.get("customer"));
+			} else {
+				currentItems = fodao.findAll(PageRequest.of(i, 100)).toList();
+			}
+				
 			if (params.containsKey("state")) {
-				resultOrders.addAll(currentItems.filter(o -> o.getState() == Integer.parseInt(params.get("state"))).toList());
+				log.log(Level.INFO, "Order Service: " +  currentItems.toString());	
+				currentItems = Arrays.asList(currentItems.stream().filter(o -> o.getState() == Integer.parseInt(params.get("state"))).toArray(FoodOrder[]::new));
+				log.log(Level.INFO, "Order Service: " +  currentItems.toString());						
 			}
 			
 			if (params.containsKey("refunded")) {
-				resultOrders.addAll(currentItems.filter(o -> o.getRefunded() == Integer.parseInt(params.get("refunded"))).toList());
+		
+				currentItems = Arrays.asList(currentItems.stream().filter(o -> o.getRefunded() != null && o.getRefunded() == Integer.parseInt(params.get("refunded"))).toArray(FoodOrder[]::new));
+						
 			}
+			
+			if (params.containsKey("before")) {
+				currentItems = Arrays.asList(currentItems.stream().filter(o ->{
+					return Date.valueOf(params.get("before")).before(
+							Date.valueOf(ddao.findById(o.getId()).get().getDeliveryTime())
+							);
+					
+				}).toArray(FoodOrder[]::new));
+				
+			}
+			
+			if (params.containsKey("after")) {
+				currentItems = Arrays.asList(currentItems.stream().filter(o ->{
+							return Date.valueOf(params.get("after")).after(
+									Date.valueOf(ddao.findById(o.getId()).get().getDeliveryTime())
+									);
+							
+						}).toArray(FoodOrder[]::new));
+			}
+			resultOrders.addAll(currentItems);
 			
 		}
 		return resultOrders;
+	}
+	
+	private List<FoodOrder> searchByUser(String customer) {
+		try {
+		if(cdao.existsById(Integer.parseInt(customer))) {
+			return cdao.findById(Integer.parseInt(customer)).get().getOrders();
+		};
+			
+		} catch (NumberFormatException | NullPointerException | NoSuchElementException e) {}
+		
+		if (cdao.existsByUsernameAndRole(customer, 1)) {
+			return cdao.findByUsername(customer).getOrders();
+			
+		}
+		
+		if (cdao.existsByEmailAndRole(customer, 1)) {
+			return cdao.findByEmail(customer).getOrders();
+		}
+		
+		return new ArrayList<FoodOrder>();
+		
 	}
 
 	public boolean deleteOrderItem(OrderItem item) {

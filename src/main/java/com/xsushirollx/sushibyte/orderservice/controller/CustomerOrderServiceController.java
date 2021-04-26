@@ -31,7 +31,6 @@ public class CustomerOrderServiceController {
 	OrderService orderService;
 
 	@PostMapping(value = "/update")
-	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 	
@@ -53,7 +52,6 @@ public class CustomerOrderServiceController {
 	}
 
 	@PutMapping(value = "/submit")
-	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 
@@ -73,7 +71,6 @@ public class CustomerOrderServiceController {
 	}
 
 	@PutMapping(value = "/delivery")
-	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> updateDelivery(@RequestBody Delivery address,
 			@RequestHeader("Authorization") String token) {
 
@@ -94,7 +91,6 @@ public class CustomerOrderServiceController {
 	}
 
 	@GetMapping(value = "/active")
-	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<FoodOrder> getActiveOrder(@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
@@ -112,7 +108,6 @@ public class CustomerOrderServiceController {
 	}
 
 	@GetMapping(value = "/all")
-	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<List<FoodOrder>> getAllOrders(@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
 		try {

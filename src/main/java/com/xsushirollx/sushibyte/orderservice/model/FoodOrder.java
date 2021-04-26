@@ -99,6 +99,12 @@ public class FoodOrder {
 	
 
 	@Override
+	public String toString() {
+		return "FoodOrder [id=" + id + ", state=" + state + ", customerId=" + customerId + ", refunded=" + refunded
+				+ ", orderItems=" + orderItems + ", stripe=" + stripe + "]";
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

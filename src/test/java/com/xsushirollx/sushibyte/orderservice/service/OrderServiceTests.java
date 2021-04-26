@@ -1,5 +1,10 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +14,8 @@ import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 
 @SpringBootTest
 public class OrderServiceTests {
+	
+	Logger log = Logger.getLogger("OrderServiceTests");
 
 	@Autowired
 	OrderService orderService;
@@ -140,5 +147,43 @@ public class OrderServiceTests {
 		FoodOrder order = new FoodOrder();
 		order.setId(5);
 		assert(!orderService.cancelOrder(order));
+	}
+	
+	@Test
+	public void searchAllOrdersByUsernameHP() {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("customer", "tsemaye");
+		log.log(Level.INFO, "Size: " + orderService.searchAllOrders(params).size());
+		assert(orderService.searchAllOrders(params).size() == 3);
+	}
+	
+	@Test
+	public void searchAllOrdersByEmailHP() {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("customer", "t.oseragbaje@gmail.com");
+		assert(orderService.searchAllOrders(params).size() == 3);
+	}
+	
+	@Test
+	public void searchAllOrdersByIdHP() {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("customer", "1");
+		assert(orderService.searchAllOrders(params).size() == 3);
+	}
+	
+	@Test
+	public void searchAllOrdersByStateHP() {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("state", "5");
+		log.log(Level.INFO, "Size: " + orderService.searchAllOrders(params).size());
+		assert(orderService.searchAllOrders(params).size() == 1);
+	}
+	
+	@Test
+	public void searchAllOrdersByRefundedHP() {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("refunded", "1");
+		log.log(Level.INFO, "Size: " + orderService.searchAllOrders(params).size());
+		assert(orderService.searchAllOrders(params).size() == 0);
 	}
 }

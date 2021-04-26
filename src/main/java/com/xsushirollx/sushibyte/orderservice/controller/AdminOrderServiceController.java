@@ -42,7 +42,6 @@ public class AdminOrderServiceController {
 	private Logger log = Logger.getLogger("Order Controller");
 
 	// DONE
-	
 	@PostMapping(value = "/update")
 	public ResponseEntity<?> updateOrder(@RequestBody OrderItem item, @RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();

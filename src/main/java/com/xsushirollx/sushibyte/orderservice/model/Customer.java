@@ -21,6 +21,12 @@ public class Customer  {
 	@Column(name = "role")
 	Integer role;
 	
+	@Column(name = "username")
+	String username;
+	
+	@Column(name = "email")
+	String email;
+	
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "customer_id")
 	List<FoodOrder> orders;
@@ -57,6 +63,22 @@ public class Customer  {
 
 	public void setOrders(List<FoodOrder> order) {
 		this.orders = order;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	@Override

@@ -10,20 +10,24 @@ import javax.persistence.Table;
 public class Delivery {
 	
 	@Id
-	@Column
+	@Column(name = "id")
 	private Integer id;
 	
-	@Column
+	@Column(name = "street")
 	private String street;
 	
-	@Column
+	@Column(name = "city")
 	private String city;
 	
-	@Column
+	@Column(name = "state")
 	private String state;
 	
-	@Column
+	@Column(name = "zip_code")
 	private Integer zipCode;
+	
+	@Column(name = "delivery_time")
+	private String deliveryTime;
+	
 
 	public Integer getId() {
 		return id;
@@ -64,6 +68,15 @@ public class Delivery {
 	public void setZipCode(Integer zipCode) {
 		this.zipCode = zipCode;
 	}
+
+	public String getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(String deliveryTime) {
+		this.deliveryTime = deliveryTime;
+	}
+	
 	
 	
 
