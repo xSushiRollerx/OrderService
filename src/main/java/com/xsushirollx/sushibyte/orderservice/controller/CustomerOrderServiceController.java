@@ -106,6 +106,25 @@ public class CustomerOrderServiceController {
 			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@GetMapping(value = "/active-address")
+	public ResponseEntity<Delivery> getActiveDeliveryAddress(@RequestHeader("Authorization") String token) {
+		MultiValueMap<String, String> headers = getHeaders(token);
+		try {
+			if (!hasPermission()) {
+				return new ResponseEntity<>(headers, HttpStatus.FORBIDDEN);
+			}
+			return new ResponseEntity<Delivery>(
+					orderService.getDeliveryAddress(Integer
+							.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName())),
+					headers, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
 
 	@GetMapping(value = "/all")
 	public ResponseEntity<List<FoodOrder>> getAllOrders(@RequestHeader("Authorization") String token) {

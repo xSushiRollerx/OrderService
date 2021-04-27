@@ -106,7 +106,14 @@ public class OrderService {
 			return false;
 		}
 	}
-
+	
+	public Delivery getDeliveryAddress(int customerId) {
+		try {
+			return ddao.findById(fodao.findByCustomerIdAndState(customerId, 0).getId()).get();
+		} catch (NullPointerException | NoSuchElementException e) {
+			return null;
+		}
+	}
 	public boolean submitOrder(FoodOrder order) {
 		try {
 			if (fodao.findById(order.getId()).get().getState() != 0 | fodao.findById(order.getId()).get().getOrderItems().size() == 0) {
