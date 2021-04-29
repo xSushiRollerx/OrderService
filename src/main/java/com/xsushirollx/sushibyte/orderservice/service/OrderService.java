@@ -103,6 +103,7 @@ public class OrderService {
 				return false;
 			}
 		} catch (NoSuchElementException | NullPointerException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}

@@ -1,6 +1,8 @@
 package com.xsushirollx.sushibyte.orderservice.controller;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,8 @@ import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 @Controller
 @RequestMapping("/customer/order")
 public class CustomerOrderServiceController {
+	
+	private Logger log = Logger.getLogger("CustomerOrderServiceController");
 
 	@Autowired
 	OrderService orderService;
@@ -76,12 +80,15 @@ public class CustomerOrderServiceController {
 
 		MultiValueMap<String, String> headers = getHeaders(token);
 		try {
-			if (!hasPermission(address)) {
+			if (!hasPermission()) {
+				log.log(Level.INFO, "Will Throw Forbidden since it does not have permission ");
 				return new ResponseEntity<>("Cannot Add Delivery Address", headers, HttpStatus.FORBIDDEN);
 			}
+			address.setId(Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getName()));
 			if (orderService.updateDeliveryAddress(address)) {
 				return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
 			} else {
+				log.log(Level.INFO, "Order Service Update Delivery returned false");
 				return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
@@ -144,7 +151,6 @@ public class CustomerOrderServiceController {
 	}
 
 	@DeleteMapping(value = "/remove")
-	@PreAuthorize("1 == authentication.principal.role")
 	public ResponseEntity<?> deleteOrderItem(@RequestBody OrderItem item,
 			@RequestHeader("Authorization") String token) {
 		MultiValueMap<String, String> headers = getHeaders(token);
@@ -224,22 +230,25 @@ public class CustomerOrderServiceController {
 			return false;
 		}
 	}
-
-	private boolean hasPermission(Delivery address) {
-		try {
-			@SuppressWarnings("unchecked")
-			List<FoodOrder> orders = (List<FoodOrder>) SecurityContextHolder.getContext().getAuthentication()
-					.getDetails();
-			for (int i = 0; i < orders.size(); i++) {
-				if (orders.get(i).getId() == address.getId()) {
-					return true;
-				}
-			}
-			return false;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+//
+//	private boolean hasPermission(Delivery address) {
+//		try {
+//			@SuppressWarnings("unchecked")
+//			List<FoodOrder> orders = (List<FoodOrder>) SecurityContextHolder.getContext().getAuthentication()
+//					.getDetails();
+//			for (int i = 0; i < orders.size(); i++) {
+//				log.log(Level.INFO, "Order Id: " + orders.get(i).getId());
+//				log.log(Level.INFO, "Address Id" + address.getId());
+//				if (orders.get(i).getId() == address.getId()) {
+//					log.log(Level.INFO, "There is an Order with Address Id");
+//					return true;
+//				}
+//			}
+//			return false;
+//		} catch (Exception e) {
+//			return false;
+//		}
+//	}
 	
 	private boolean hasPermission() {
 		try {

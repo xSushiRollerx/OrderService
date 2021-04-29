@@ -179,7 +179,7 @@ public class CustomerOrderServiceControllerTests {
 		
 		Delivery d = new Delivery();
 		d.setId(7);
-		String token  = "Bearer " + util.generateToken("1");
+		String token  = "Bearer ";
 		when(orderService.updateDeliveryAddress(Mockito.any(Delivery.class))).thenReturn(true);
 	
 		try {
