@@ -5,17 +5,13 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -26,39 +22,35 @@ public class FoodOrder {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "order_state")
 	private Integer state;
-	
+
 	@Column(name = "customer_id")
 	private Integer customerId;
-	
+
 	@Column(name = "is_refunded")
 	private Integer refunded;
-	
-//	@OneToMany(fetch = FetchType.EAGER,
-//			cascade = CascadeType.ALL)
-//	@JoinColumn(name = "order_id")
-	@JsonIgnore
-	@Transient
+
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderItem> orderItems;
-	
+
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+	@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 	private Delivery address;
-	
+
 	@JsonIgnore
 	@Column(name = "stripe")
 	private Integer stripe;
 
 	public FoodOrder() {
 	}
-	
+
 	public FoodOrder(Integer id, Integer state) {
 		this.id = id;
 		this.state = state;
 	}
-	
+
 	public FoodOrder(Integer id, Integer state, Integer customerId, List<OrderItem> orderItems, Delivery address) {
 		super();
 		this.id = id;
@@ -99,7 +91,7 @@ public class FoodOrder {
 	public void setRefunded(Integer refunded) {
 		this.refunded = refunded;
 	}
-	
+
 	public List<OrderItem> getOrderItems() {
 		return orderItems;
 	}
@@ -154,9 +146,5 @@ public class FoodOrder {
 			return false;
 		return true;
 	}
-	
 
-	
-	
-	
 }

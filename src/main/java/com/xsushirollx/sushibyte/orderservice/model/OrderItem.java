@@ -2,10 +2,10 @@ package com.xsushirollx.sushibyte.orderservice.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -14,29 +14,26 @@ import javax.persistence.Transient;
 @Table(name = "order_item")
 public class OrderItem {
 
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "food_id")
 	private Integer foodId;
-	
-//	@ManyToOne
-//	@JoinColumn(name = "id")
-	@Column(name = "order_id")
-	private Integer orderId;
-	
+
 	@Column(name = "count")
 	private Integer quantity;
-	
+
 	@Column(name = "price")
 	private Float price;
-	
+
 	@Column(name = "food_item_name")
 	private String name;
-	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	FoodOrder order;
+
 	@Transient
 	private Integer isActive;
 
@@ -54,14 +51,6 @@ public class OrderItem {
 
 	public void setFoodId(Integer foodId) {
 		this.foodId = foodId;
-	}
-
-	public Integer getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
 	}
 
 	public Integer getQuantity() {
@@ -98,8 +87,8 @@ public class OrderItem {
 
 	@Override
 	public String toString() {
-		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /**+ orderId**/ + ", quantity=" + quantity
-				+ ", price=" + price + ", name=" + name + ", isActive=" + isActive + "]";
+		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /** + orderId **/
+				+ ", quantity=" + quantity + ", price=" + price + ", name=" + name + ", isActive=" + isActive + "]";
 	}
 
 	@Override
@@ -127,7 +116,4 @@ public class OrderItem {
 		return true;
 	}
 
-	
-	
-	
 }
