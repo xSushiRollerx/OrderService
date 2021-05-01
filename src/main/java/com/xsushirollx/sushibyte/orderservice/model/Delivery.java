@@ -2,7 +2,12 @@ package com.xsushirollx.sushibyte.orderservice.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -10,6 +15,7 @@ import javax.persistence.Table;
 public class Delivery {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
@@ -28,6 +34,28 @@ public class Delivery {
 	@Column(name = "delivery_time")
 	private String deliveryTime;
 	
+	@OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private FoodOrder order;
+	
+	public FoodOrder getOrder() {
+		return order;
+	}
+
+	public void setOrder(FoodOrder order) {
+		this.order = order;
+	}
+
+	public Delivery() {}
+
+	public Delivery(String street, String city, String state, Integer zipCode) {
+		super();
+		this.street = street;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+	}
 
 	public Integer getId() {
 		return id;

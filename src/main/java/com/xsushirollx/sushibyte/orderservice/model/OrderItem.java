@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -21,6 +23,8 @@ public class OrderItem {
 	@Column(name = "food_id")
 	private Integer foodId;
 	
+//	@ManyToOne
+//	@JoinColumn(name = "id")
 	@Column(name = "order_id")
 	private Integer orderId;
 	
@@ -94,7 +98,7 @@ public class OrderItem {
 
 	@Override
 	public String toString() {
-		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" + orderId + ", quantity=" + quantity
+		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /**+ orderId**/ + ", quantity=" + quantity
 				+ ", price=" + price + ", name=" + name + ", isActive=" + isActive + "]";
 	}
 

@@ -37,7 +37,7 @@ public class CustomerAuthenticationTokenTests {
 	@Test 
 	public void getAuthorities() {
 		System.out.println("Granted Authority " + token.getAuthorities().toArray()[0].toString());
-		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("CUSTOMER")));
+		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
 	}
 	
 	

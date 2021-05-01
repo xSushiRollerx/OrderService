@@ -38,16 +38,16 @@ public class CustomerAuthenticationToken implements Authentication {
 		}
 		switch (customer.getRole()) {
 		case 1:
-			authorities.add(new SimpleGrantedAuthority("CUSTOMER"));
+			authorities.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
 			break;
 		case 2:
-			authorities.add(new SimpleGrantedAuthority("ADMINISTRATOR"));
+			authorities.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
 			break;
 		case 3:
-			authorities.add(new SimpleGrantedAuthority("DRIVER"));
+			authorities.add(new SimpleGrantedAuthority("ROLE_DRIVER"));
 			break;
 		default:
-			authorities.add(new SimpleGrantedAuthority("NONE"));
+			authorities.add(new SimpleGrantedAuthority("ROLE_NONE"));
 			break;
 		}
 		return authorities;

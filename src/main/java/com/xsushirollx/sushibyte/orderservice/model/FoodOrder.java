@@ -2,6 +2,7 @@ package com.xsushirollx.sushibyte.orderservice.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,7 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -32,9 +36,16 @@ public class FoodOrder {
 	@Column(name = "is_refunded")
 	private Integer refunded;
 	
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "order_id")
+//	@OneToMany(fetch = FetchType.EAGER,
+//			cascade = CascadeType.ALL)
+//	@JoinColumn(name = "order_id")
+	@JsonIgnore
+	@Transient
 	private List<OrderItem> orderItems;
+	
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+	private Delivery address;
 	
 	@JsonIgnore
 	@Column(name = "stripe")
@@ -46,6 +57,15 @@ public class FoodOrder {
 	public FoodOrder(Integer id, Integer state) {
 		this.id = id;
 		this.state = state;
+	}
+	
+	public FoodOrder(Integer id, Integer state, Integer customerId, List<OrderItem> orderItems, Delivery address) {
+		super();
+		this.id = id;
+		this.state = state;
+		this.customerId = customerId;
+		this.orderItems = orderItems;
+		this.address = address;
 	}
 
 	public Integer getId() {
@@ -88,6 +108,14 @@ public class FoodOrder {
 		this.orderItems = orderItems;
 	}
 
+	public Delivery getAddress() {
+		return address;
+	}
+
+	public void setAddress(Delivery address) {
+		this.address = address;
+	}
+
 	public Integer getStripe() {
 		return stripe;
 	}
@@ -95,8 +123,6 @@ public class FoodOrder {
 	public void setStripe(Integer stripe) {
 		this.stripe = stripe;
 	}
-	
-	
 
 	@Override
 	public String toString() {
