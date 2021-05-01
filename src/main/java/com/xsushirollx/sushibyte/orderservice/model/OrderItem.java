@@ -85,6 +85,14 @@ public class OrderItem {
 		this.isActive = isActive;
 	}
 
+	public FoodOrder getOrder() {
+		return order;
+	}
+
+	public void setOrder(FoodOrder order) {
+		this.order = order;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /** + orderId **/

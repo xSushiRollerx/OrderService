@@ -30,6 +30,10 @@ public class OrderService {
 	public boolean submitOrder(FoodOrder o, int customerId) {
 		o.setCustomerId(customerId);
 		o.getAddress().setOrder(o);
+		
+		for (int i = 0; i < o.getOrderItems().size(); i++) {
+			o.getOrderItems().get(i).setOrder(o);
+		}
 		fodao.save(o);
 		return true;
 		
