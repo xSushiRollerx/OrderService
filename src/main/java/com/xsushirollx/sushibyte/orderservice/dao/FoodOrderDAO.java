@@ -10,10 +10,8 @@ import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 @Repository
 public interface FoodOrderDAO extends JpaRepository<FoodOrder, Integer> {
 
-	boolean existsByCustomerIdAndState(int customerId, int state);
-
-	FoodOrder findByCustomerIdAndState(int userId, int state);
-
 	List<FoodOrder> findByCustomerId(int userId);
+
+	boolean existsByIdAndState(int id, int state);
 
 }

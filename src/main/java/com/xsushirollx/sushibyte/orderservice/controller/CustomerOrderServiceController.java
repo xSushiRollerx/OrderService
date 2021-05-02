@@ -32,17 +32,22 @@ public class CustomerOrderServiceController {
 		log.log(Level.INFO, "");
 		//security: check loaded user is the same as the one specified in the url path
 		try {
-			return new ResponseEntity<>(orderService.submitOrder(order, customerId), HttpStatus.NO_CONTENT);
+			orderService.submitOrder(order, customerId);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 	}
 	
-	@PutMapping(value = "/order/{id}")
-	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrder order) {
-		return null;
-		
+	@PutMapping(value = "/order/{orderId}/state/{orderState}")
+	public ResponseEntity<?> updateOrderState(@RequestBody FoodOrder order, @PathVariable("orderState") Integer orderState) {
+		try {
+			orderService.updateOrderState(order, orderState);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@GetMapping(value = "/orders/all")

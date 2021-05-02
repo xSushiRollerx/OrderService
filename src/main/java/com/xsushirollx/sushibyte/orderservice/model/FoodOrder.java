@@ -20,13 +20,13 @@ public class FoodOrder {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", updatable = false)
 	private Integer id;
 
 	@Column(name = "order_state")
 	private Integer state;
 
-	@Column(name = "customer_id")
+	@Column(name = "customer_id", updatable = false)
 	private Integer customerId;
 
 	@Column(name = "is_refunded")

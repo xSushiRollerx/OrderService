@@ -16,27 +16,27 @@ public class Delivery {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", updatable = false)
 	private Integer id;
 	
-	@Column(name = "street")
+	@Column(name = "street", updatable = false)
 	private String street;
 	
-	@Column(name = "city")
+	@Column(name = "city", updatable = false)
 	private String city;
 	
-	@Column(name = "state")
+	@Column(name = "state", updatable = false)
 	private String state;
 	
-	@Column(name = "zip_code")
+	@Column(name = "zip_code",updatable = false)
 	private Integer zipCode;
 	
-	@Column(name = "delivery_time")
+	@Column(name = "delivery_time", updatable = false)
 	private String deliveryTime;
 	
 	@OneToOne
     @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", updatable = false)
     private FoodOrder order;
 	
 	public FoodOrder getOrder() {

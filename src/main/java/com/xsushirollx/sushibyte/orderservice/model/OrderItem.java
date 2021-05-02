@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "order_item")
@@ -16,26 +15,23 @@ public class OrderItem {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", updatable = false)
 	private Integer id;
 
-	@Column(name = "food_id")
+	@Column(name = "food_id", updatable = false)
 	private Integer foodId;
 
-	@Column(name = "count")
+	@Column(name = "count", updatable = false)
 	private Integer quantity;
 
-	@Column(name = "price")
+	@Column(name = "price", updatable = false)
 	private Float price;
 
-	@Column(name = "food_item_name")
+	@Column(name = "food_item_name", updatable = false)
 	private String name;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	FoodOrder order;
-
-	@Transient
-	private Integer isActive;
 
 	public Integer getId() {
 		return id;
@@ -77,14 +73,6 @@ public class OrderItem {
 		this.name = name;
 	}
 
-	public Integer getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Integer isActive) {
-		this.isActive = isActive;
-	}
-
 	public FoodOrder getOrder() {
 		return order;
 	}
@@ -96,7 +84,7 @@ public class OrderItem {
 	@Override
 	public String toString() {
 		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /** + orderId **/
-				+ ", quantity=" + quantity + ", price=" + price + ", name=" + name + ", isActive=" + isActive + "]";
+				+ ", quantity=" + quantity + ", price=" + price + ", name=" + name + "]";
 	}
 
 	@Override

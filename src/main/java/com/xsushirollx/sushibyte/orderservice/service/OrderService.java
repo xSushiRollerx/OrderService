@@ -36,11 +36,22 @@ public class OrderService {
 		}
 		fodao.save(o);
 		return true;
-		
 	}
 	
 	public List<FoodOrder> getAllCustomerOrders(int customerId) {
 		return fodao.findByCustomerId(customerId);
+	}
+	
+	
+	public boolean updateOrderState(FoodOrder order, int orderState) {
+		if (fodao.existsByIdAndState(order.getId(), orderState - 1)) {
+			order.setState(orderState);
+			fodao.save(order);
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 
 	
