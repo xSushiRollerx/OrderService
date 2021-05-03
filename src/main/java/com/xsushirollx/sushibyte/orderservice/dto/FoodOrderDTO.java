@@ -10,7 +10,8 @@ public class FoodOrderDTO {
 
 	private Integer customerId;
 
-
+	private Integer restaurantId;
+	
 	private Integer refunded;
 
 
@@ -99,6 +100,14 @@ public class FoodOrderDTO {
 	public String toString() {
 		return "FoodOrder [id=" + id + ", state=" + state + ", customerId=" + customerId + ", refunded=" + refunded
 				+ ", orderItems=" + orderItems + ", stripe=" + stripe + "]";
+	}
+	
+	public Integer getRestaurantId() {
+		return restaurantId;
+	}
+
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	@Override

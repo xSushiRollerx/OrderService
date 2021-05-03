@@ -33,6 +33,9 @@ public class FoodOrder {
 
 	@Column(name = "is_refunded")
 	private Integer refunded;
+	
+	@Column(name = "restaurant_id", updatable = false)
+	private Integer restaurantId;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderItem> orderItems;
@@ -53,15 +56,6 @@ public class FoodOrder {
 		this.state = state;
 	}
 
-	public FoodOrder(Integer id, Integer state, Integer customerId, List<OrderItem> orderItems, Delivery address) {
-		super();
-		this.id = id;
-		this.state = state;
-		this.customerId = customerId;
-		this.orderItems = orderItems;
-		this.address = address;
-	}
-
 	public FoodOrder(FoodOrderDTO order) {
 		
 		List<OrderItem> orderItems = new ArrayList<OrderItem>();
@@ -74,6 +68,7 @@ public class FoodOrder {
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
 		this.address = new Delivery(order.getAddress());
+		this.restaurantId = order.getRestaurantId();
 		
 		
 	}
@@ -128,6 +123,14 @@ public class FoodOrder {
 
 	public Integer getStripe() {
 		return stripe;
+	}
+	
+	public Integer getRestaurantId() {
+		return restaurantId;
+	}
+
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	public void setStripe(Integer stripe) {
