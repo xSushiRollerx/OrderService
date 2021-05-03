@@ -1,50 +1,17 @@
-package com.xsushirollx.sushibyte.orderservice.model;
+package com.xsushirollx.sushibyte.orderservice.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
-import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
+public class OrderItemDTO {
 
-@Entity
-@Table(name = "order_item")
-public class OrderItem {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", updatable = false)
 	private Integer id;
 
-	@Column(name = "food_id", updatable = false)
 	private Integer foodId;
 
-	@Column(name = "count", updatable = false)
 	private Integer quantity;
 
-	@Column(name = "price", updatable = false)
 	private Float price;
 
-	@Column(name = "food_item_name", updatable = false)
 	private String name;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	FoodOrder order;
-	
-	public OrderItem() {}
-
-	public OrderItem(OrderItemDTO orderItem) {
-		this.id = orderItem.getId();
-		this.foodId = orderItem.getFoodId();
-		this.quantity = orderItem.getQuantity();
-		this.price = orderItem.getPrice();
-		this.name = orderItem.getName();
-	}
-	
 
 	public Integer getId() {
 		return id;
@@ -86,14 +53,6 @@ public class OrderItem {
 		this.name = name;
 	}
 
-	public FoodOrder getOrder() {
-		return order;
-	}
-
-	public void setOrder(FoodOrder order) {
-		this.order = order;
-	}
-
 	@Override
 	public String toString() {
 		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /** + orderId **/
@@ -116,7 +75,7 @@ public class OrderItem {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		OrderItem other = (OrderItem) obj;
+		OrderItemDTO other = (OrderItemDTO) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
 @Controller
@@ -28,9 +28,7 @@ public class CustomerOrderServiceController {
 	OrderService orderService;
 
 	@PostMapping(value = "/order")
-	public ResponseEntity<?> submitOrder(@RequestBody FoodOrder order, @PathVariable("id") Integer customerId, @RequestHeader("Authorization") String token) {
-		log.log(Level.INFO, "");
-		//security: check loaded user is the same as the one specified in the url path
+	public ResponseEntity<?> submitOrder(@RequestBody FoodOrderDTO order, @PathVariable("id") Integer customerId) {
 		try {
 			orderService.submitOrder(order, customerId);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -41,7 +39,7 @@ public class CustomerOrderServiceController {
 	}
 	
 	@PutMapping(value = "/order/{orderId}/state/{orderState}")
-	public ResponseEntity<?> updateOrderState(@RequestBody FoodOrder order, @PathVariable("orderState") Integer orderState) {
+	public ResponseEntity<?> updateOrderState(@RequestBody FoodOrderDTO order, @PathVariable("orderState") Integer orderState) {
 		try {
 			orderService.updateOrderState(order, orderState);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

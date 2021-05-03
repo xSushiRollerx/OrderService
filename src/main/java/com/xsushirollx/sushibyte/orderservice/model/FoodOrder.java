@@ -1,5 +1,6 @@
 package com.xsushirollx.sushibyte.orderservice.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 
 @Entity
 @Table(name = "food_order")
@@ -60,6 +62,22 @@ public class FoodOrder {
 		this.address = address;
 	}
 
+	public FoodOrder(FoodOrderDTO order) {
+		
+		List<OrderItem> orderItems = new ArrayList<OrderItem>();
+		for (int i = 0; i < order.getOrderItems().size(); i++) {
+			orderItems.add(new OrderItem(order.getOrderItems().get(i)));
+		}
+		
+		this.id = order.getId();
+		this.state = order.getState();
+		this.customerId = order.getCustomerId();
+		this.orderItems = orderItems;
+		this.address = new Delivery(order.getAddress());
+		
+		
+	}
+	
 	public Integer getId() {
 		return id;
 	}

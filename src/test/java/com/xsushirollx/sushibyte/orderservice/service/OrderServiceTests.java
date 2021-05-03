@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.xsushirollx.sushibyte.orderservice.model.Delivery;
-import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
-import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
+import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
+import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 
 @SpringBootTest
 public class OrderServiceTests {
@@ -21,7 +21,7 @@ public class OrderServiceTests {
 	
 	@Test
 	public void sumbitOrderHP() {
-		assert(orderService.submitOrder(new FoodOrder( null, 0, 1, new ArrayList<OrderItem>(), new Delivery("Overthere", "nowhere", "NV", 66666)), 1));
+		assert(orderService.submitOrder(new FoodOrderDTO( null, 0, 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO()), 1));
 	}
 	
 	@Test

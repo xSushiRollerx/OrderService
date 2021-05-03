@@ -3,6 +3,7 @@ package com.xsushirollx.sushibyte.orderservice.controller;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -17,7 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
+import com.xsushirollx.sushibyte.orderservice.model.*;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
@@ -41,18 +43,36 @@ public class CustomerOrderServiceControllerTests {
 	@Test
 	public void postOrder204() {
 		
-		FoodOrder o = new FoodOrder();
+		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("96");
-		when(orderService.submitOrder(Mockito.any(FoodOrder.class), Mockito.anyInt())).thenReturn(true);
+		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenReturn(true);
 	
 		try {
 			mockMvc.perform(post("/customer/96/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(o)))
-			.andExpect(status().isNoContent());
+					.andExpect(status().isNoContent());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void updateOrder204() {
+		
+		FoodOrderDTO o = new FoodOrderDTO();
+		String token  = "Bearer " + util.generateToken("96");
+		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenReturn(true);
+	
+		try {
+			mockMvc.perform(put("/customer/96/order/3/state/1").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(o)))
+					.andExpect(status().isNoContent());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 	@Test
 	public void getAllOrders204() {

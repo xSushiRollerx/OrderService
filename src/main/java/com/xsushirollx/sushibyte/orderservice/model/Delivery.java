@@ -10,6 +10,8 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
+
 @Entity
 @Table(name = "delivery")
 public class Delivery {
@@ -55,6 +57,14 @@ public class Delivery {
 		this.city = city;
 		this.state = state;
 		this.zipCode = zipCode;
+	}
+	
+	public Delivery(DeliveryDTO delivery) {
+		this.street = delivery.getStreet();
+		this.city = delivery.getCity();
+		this.state = delivery.getState();
+		this.zipCode = delivery.getZipCode();
+		this.deliveryTime = delivery.getDeliveryTime();
 	}
 
 	public Integer getId() {

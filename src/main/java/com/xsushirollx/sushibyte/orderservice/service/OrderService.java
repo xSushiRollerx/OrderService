@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.xsushirollx.sushibyte.orderservice.dao.*;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.model.*;
 
 
@@ -18,8 +19,6 @@ public class OrderService {
 	@Autowired
 	FoodOrderDAO fodao;
 
-	@Autowired
-	MenuItemDAO mdao;
 	
 	@Autowired
 	DeliveryDAO ddao;
@@ -27,7 +26,8 @@ public class OrderService {
 	@Autowired
 	CustomerDAO cdao;
 	
-	public boolean submitOrder(FoodOrder o, int customerId) {
+	public boolean submitOrder(FoodOrderDTO order, int customerId) {
+		FoodOrder o = new FoodOrder(order);
 		o.setCustomerId(customerId);
 		o.getAddress().setOrder(o);
 		
@@ -43,7 +43,8 @@ public class OrderService {
 	}
 	
 	
-	public boolean updateOrderState(FoodOrder order, int orderState) {
+	public boolean updateOrderState(FoodOrderDTO o, int orderState) {
+		FoodOrder order = new FoodOrder(o);
 		if (fodao.existsByIdAndState(order.getId(), orderState - 1)) {
 			order.setState(orderState);
 			fodao.save(order);
