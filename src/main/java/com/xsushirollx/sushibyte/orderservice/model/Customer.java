@@ -18,7 +18,7 @@ public class Customer  {
 	@Column(name = "id")
 	Integer id;
 	
-	@Column(name = "role")
+	@Column(name = "user_role")
 	Integer role;
 	
 	@Column(name = "username")
