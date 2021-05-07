@@ -37,17 +37,20 @@ public class FoodOrder {
 	@Column(name = "restaurant_id", updatable = false)
 	private Integer restaurantId;
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<OrderItem> orderItems;
 
-	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 	private Delivery address;
 
 	@JsonIgnore
-	@Column(name = "stripe")
+	@Column(name = "stripe", updatable = false)
 	private Integer stripe;
 
+	@Column(name = "date_submitted", updatable = false)
+	private String dateSubmitted;
+	
 	public FoodOrder() {
 	}
 
@@ -135,6 +138,10 @@ public class FoodOrder {
 
 	public void setStripe(Integer stripe) {
 		this.stripe = stripe;
+	}
+
+	public String getDateSubmitted() {
+		return dateSubmitted;
 	}
 
 	@Override

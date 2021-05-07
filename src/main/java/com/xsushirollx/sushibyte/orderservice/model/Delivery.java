@@ -18,7 +18,7 @@ public class Delivery {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", updatable = false)
+	@Column(name = "id")
 	private Integer id;
 	
 	@Column(name = "street", updatable = false)

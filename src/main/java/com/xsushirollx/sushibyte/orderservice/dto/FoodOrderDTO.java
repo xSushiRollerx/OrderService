@@ -13,6 +13,8 @@ public class FoodOrderDTO {
 	private Integer restaurantId;
 	
 	private Integer refunded;
+	
+	private String dateSubmitted;
 
 
 	private List<OrderItemDTO> orderItems;
@@ -108,6 +110,10 @@ public class FoodOrderDTO {
 
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
+	}
+	
+	public String getDateSubmitted() {
+		return dateSubmitted;
 	}
 
 	@Override

@@ -13,6 +13,17 @@ public class OrderItemDTO {
 
 	private String name;
 
+	private Integer restaurantId;
+
+	public OrderItemDTO(Integer foodId, Integer quantity, Float price, String name, Integer restaurantId) {
+		super();
+		this.foodId = foodId;
+		this.quantity = quantity;
+		this.price = price;
+		this.name = name;
+		this.restaurantId = restaurantId;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -52,11 +63,20 @@ public class OrderItemDTO {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public Integer getRestaurantId() {
+		return this.restaurantId;
+	}
+	
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
+	}
+
 
 	@Override
 	public String toString() {
-		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /** + orderId **/
-				+ ", quantity=" + quantity + ", price=" + price + ", name=" + name + "]";
+		return "OrderItemDTO [id=" + id + ", foodId=" + foodId + ", quantity=" + quantity + ", price=" + price
+				+ ", name=" + name + ", restaurantId=" + restaurantId + "]";
 	}
 
 	@Override
