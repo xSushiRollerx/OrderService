@@ -25,13 +25,13 @@ public class FoodOrder {
 	@Column(name = "id", updatable = false)
 	private Integer id;
 
-	@Column(name = "order_state")
+	@Column(name = "order_state", insertable = false)
 	private Integer state;
 
 	@Column(name = "customer_id", updatable = false)
 	private Integer customerId;
 
-	@Column(name = "is_refunded")
+	@Column(name = "is_refunded", insertable = false)
 	private Integer refunded;
 	
 	@Column(name = "restaurant_id", updatable = false)
@@ -48,7 +48,7 @@ public class FoodOrder {
 	@Column(name = "stripe", updatable = false)
 	private Integer stripe;
 
-	@Column(name = "date_submitted", updatable = false)
+	@Column(name = "date_submitted", updatable = false, insertable = false)
 	private String dateSubmitted;
 	
 	public FoodOrder() {

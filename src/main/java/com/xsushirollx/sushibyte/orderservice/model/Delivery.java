@@ -30,10 +30,10 @@ public class Delivery {
 	@Column(name = "state", updatable = false)
 	private String state;
 	
-	@Column(name = "zip_code",updatable = false)
+	@Column(name = "zip_code", updatable = false)
 	private Integer zipCode;
 	
-	@Column(name = "delivery_time", updatable = false)
+	@Column(name = "delivered_time", insertable = false)
 	private String deliveryTime;
 	
 	@OneToOne

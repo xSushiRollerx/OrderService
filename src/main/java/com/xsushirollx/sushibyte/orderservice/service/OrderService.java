@@ -53,6 +53,7 @@ public class OrderService {
 		if (fodao.existsByIdAndState(order.getId(), order.getState() - 1) && order.getState() < 5) {
 			order.getAddress().setOrder(order);
 			order.getAddress().setId(order.getId());
+			order.setRefunded(0);
 			fodao.save(order);
 			return true;
 		} else {
@@ -67,6 +68,7 @@ public class OrderService {
 			order.setState(5);
 			order.getAddress().setOrder(order);
 			order.getAddress().setId(order.getId());
+			order.setRefunded(1);
 			fodao.save(order);
 			return true;
 		} else {
