@@ -18,14 +18,17 @@ public class CustomerAuthenticationToken implements Authentication {
 	private static final long serialVersionUID = 1L;
 
 	private final Customer customer;
+	private final String jwtToken;
 	
 	private Logger log = Logger.getLogger("CustomerAuthenticationToken");
 
 	private Boolean isAuthenticated = true;
+	
 
-	public CustomerAuthenticationToken(Customer customer) {
+	public CustomerAuthenticationToken(Customer customer, String jwtToken) {
 		log.log(Level.INFO, "role: " + customer.getRole());
 		this.customer = customer;
+		this.jwtToken = jwtToken;
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public class CustomerAuthenticationToken implements Authentication {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		log.log(Level.INFO, "Authentication Authorities SET");
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		if (customer == null) {
+		if (customer.getRole() == 0) {
 			authorities.add(new SimpleGrantedAuthority("NONE"));
 			log.log(Level.INFO, "Customer null so token null");
 			return authorities;
@@ -65,8 +68,8 @@ public class CustomerAuthenticationToken implements Authentication {
 	}
 
 	@Override
-	public Object getCredentials() {
-		return null;
+	public String getCredentials() {
+		return jwtToken;
 	}
 
 	@Override

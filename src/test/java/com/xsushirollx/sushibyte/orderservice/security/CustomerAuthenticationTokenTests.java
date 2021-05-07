@@ -15,29 +15,38 @@ import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class CustomerAuthenticationTokenTests {
-	
-	CustomerAuthenticationToken token;
 	Logger log = Logger.getLogger("CustomerAuthenticationTokenTests");		
+	CustomerAuthenticationToken token;
+	Customer c;
+	
 	@BeforeAll
 	public void setUp() {
-		Customer c =  new Customer(96, 1);
+		c =  new Customer(96, 1);
 		List<FoodOrder> orders = new ArrayList<>(); 
 		orders.add(new FoodOrder(1, 0));
 		orders.add(new FoodOrder(87, 1));
 		c.setOrders(orders);
 		
-		token = new CustomerAuthenticationToken(c);
+		token = new CustomerAuthenticationToken(c,"jwttoken");
 	}
 	
 	@Test 
-	public void getPrincipal() {
+	public void getName() {
 		assert(Integer.parseInt(token.getName()) == 96);
 	}
 	
 	@Test 
+	public void getPrincipal() {
+		assert(token.getPrincipal().equals(c));
+	}
+	
+	@Test 
 	public void getAuthorities() {
-		System.out.println("Granted Authority " + token.getAuthorities().toArray()[0].toString());
 		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("CUSTOMER")));
+		assert(new CustomerAuthenticationToken(new Customer(0, 0), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
+		assert(new CustomerAuthenticationToken(new Customer(0, 2), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR")));
+		assert(new CustomerAuthenticationToken(new Customer(0, 3), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("DRIVER")));
+		assert(new CustomerAuthenticationToken(new Customer(0, 4), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
 	}
 	
 	
@@ -50,7 +59,18 @@ public class CustomerAuthenticationTokenTests {
 		assert(orders.get(0).getId() == 1);
 		assert(orders.get(1).getId() == 87);
 	}
+	
+	@Test
+	public void getsetAuthentication() {
+		assert(token.isAuthenticated() == true);
+		token.setAuthenticated(false);
+		assert(token.isAuthenticated() == false);
+	}
 
+	@Test
+	public void getCredentials() {
+		assert(token.getCredentials().equals("jwttoken"));
+	}
 	
 
 }
