@@ -2,6 +2,8 @@ package com.xsushirollx.sushibyte.orderservice.service;
 
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,8 @@ import com.xsushirollx.sushibyte.orderservice.model.*;
 @Service
 public class OrderService {
 
+	Logger log = Logger.getLogger("OrerService");
+	
 	@Autowired
 	OrderItemDAO odao;
 
@@ -43,10 +47,26 @@ public class OrderService {
 	}
 	
 	
-	public boolean updateOrderState(FoodOrderDTO o, int orderState) {
+	public boolean updateOrderState(FoodOrderDTO o) {
 		FoodOrder order = new FoodOrder(o);
-		if (fodao.existsByIdAndState(order.getId(), orderState - 1)) {
-			order.setState(orderState);
+		log.log(Level.INFO, "state: " + order.getState());
+		if (fodao.existsByIdAndState(order.getId(), order.getState() - 1) && order.getState() < 5) {
+			order.getAddress().setOrder(order);
+			order.getAddress().setId(order.getId());
+			fodao.save(order);
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+	
+	public boolean cancelOrder(FoodOrderDTO o) {
+		FoodOrder order = new FoodOrder(o);
+		if (fodao.existsByIdAndState(order.getId(), 0)) {
+			order.setState(5);
+			order.getAddress().setOrder(order);
+			order.getAddress().setId(order.getId());
 			fodao.save(order);
 			return true;
 		} else {

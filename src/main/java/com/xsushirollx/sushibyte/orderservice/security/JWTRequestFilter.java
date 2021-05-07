@@ -50,7 +50,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 				customer.setOrders(orders);
 			}
 			
-			CustomerAuthenticationToken customerAuthentication = new CustomerAuthenticationToken(customer);
+			CustomerAuthenticationToken customerAuthentication = new CustomerAuthenticationToken(customer, token);
 			SecurityContextHolder.getContext().setAuthentication(customerAuthentication);
 		} catch (Exception e) {
 
