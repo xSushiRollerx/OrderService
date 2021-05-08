@@ -41,7 +41,14 @@ public class CustomerAuthenticationTokenTests {
 	}
 	
 	@Test 
-	public void getAuthorities() {
+	public void getAuthoritiesOrders() {
+		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("ORDER 87")));
+		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("ORDER 1")));
+	}
+	
+	@Test 
+	public void getAuthoritiesRoles() {
+		
 		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("CUSTOMER")));
 		assert(new CustomerAuthenticationToken(new Customer(0, 0), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
 		assert(new CustomerAuthenticationToken(new Customer(0, 2), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR")));

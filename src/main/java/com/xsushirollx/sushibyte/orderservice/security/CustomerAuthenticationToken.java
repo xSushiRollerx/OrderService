@@ -19,11 +19,10 @@ public class CustomerAuthenticationToken implements Authentication {
 
 	private final Customer customer;
 	private final String jwtToken;
-	
+
 	private Logger log = Logger.getLogger("CustomerAuthenticationToken");
 
 	private Boolean isAuthenticated = true;
-	
 
 	public CustomerAuthenticationToken(Customer customer, String jwtToken) {
 		log.log(Level.INFO, "role: " + customer.getRole());
@@ -63,6 +62,15 @@ public class CustomerAuthenticationToken implements Authentication {
 			log.log(Level.INFO, "Customer none");
 			break;
 		}
+
+		try {
+			for (int i = 0; i < customer.getOrders().size(); i++) {
+				authorities.add(new SimpleGrantedAuthority("ORDER " + customer.getOrders().get(i).getId()));
+			}
+		} catch (Exception e) {
+
+		}
+
 		return authorities;
 
 	}

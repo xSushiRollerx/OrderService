@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 
 @Entity
@@ -32,6 +33,7 @@ public class OrderItem {
 	@Column(name = "food_item_name", updatable = false)
 	private String name;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	FoodOrder order;
 	

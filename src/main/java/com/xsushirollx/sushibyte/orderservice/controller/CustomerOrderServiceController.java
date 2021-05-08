@@ -1,11 +1,14 @@
 package com.xsushirollx.sushibyte.orderservice.controller;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +31,7 @@ public class CustomerOrderServiceController {
 	@Autowired
 	OrderService orderService;
 
+	@UpdatePermission
 	@PostMapping(value = "/order")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrderDTO order, @PathVariable("id") Integer customerId, @RequestHeader("Authorization") String token) {
 		try {
@@ -39,8 +43,12 @@ public class CustomerOrderServiceController {
 		
 	}
 	
+	@PreAuthorize("hasAuthority('ADMINISTRATOR')")
 	@PutMapping(value = "/order/{orderId}")
-	public ResponseEntity<?> updateOrderState(@RequestBody FoodOrderDTO order, @RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> updateOrderState(
+			@PathVariable("orderId") Integer orderId, 
+			@RequestBody FoodOrderDTO order,
+			@RequestHeader("Authorization") String token) {
 		try {
 			if (orderService.updateOrderState(order)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -52,8 +60,14 @@ public class CustomerOrderServiceController {
 		}
 	}
 	
+	@UpdatePermission
+	@PreAuthorize("(hasAuthority('CUSTOMER') and hasAuthority('ORDER ' + #orderId)) or hasAuthority('ADMINISTRATOR')")
 	@DeleteMapping(value = "/order/{orderId}")
-	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrderDTO order, @RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> cancelOrder(
+			@RequestBody FoodOrderDTO order, 
+			@RequestHeader("Authorization") String token, 
+			@PathVariable("id") Integer customerId,
+			@PathVariable("orderId") Integer orderId) {
 		try {
 			if (orderService.cancelOrder(order)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -65,9 +79,10 @@ public class CustomerOrderServiceController {
 		}
 	}
 	
+	@UpdatePermission
 	@GetMapping(value = "/orders")
 	public ResponseEntity<?> getAllOrders(@PathVariable("id") Integer customerId, @RequestHeader("Authorization") String token) {
-		log.log(Level.INFO, "");
+		log.log(Level.INFO, "get Start");
 		//security: check loaded user is the same as the one specified in the url path
 		try {
 			return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId), HttpStatus.OK);
@@ -77,6 +92,11 @@ public class CustomerOrderServiceController {
 		}
 	}
 	
+	
+	//<-------------------------------------------------- SECURITY CONFIG ---------------------------------------------------------------->
+	@Retention(RetentionPolicy.RUNTIME)
+	@PreAuthorize("(hasAuthority('CUSTOMER') and principal.id == #customerId) or (hasAuthority('ADMINISTRATOR'))")
+	private @interface UpdatePermission {}
 
 
 }
