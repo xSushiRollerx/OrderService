@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.xsushirollx.sushibyte.orderservice.dao.CustomerDAO;
-import com.xsushirollx.sushibyte.orderservice.model.Customer;
+import com.xsushirollx.sushibyte.orderservice.model.User;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
@@ -40,17 +40,17 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 			String token = request.getHeader("Authorization").substring(7);
 			int userId = Integer.parseInt(util.extractUserId(request.getHeader("Authorization").substring(7)));
 			
-			Customer customer = null;
+			User customer = null;
 			
 			if (util.validateToken(token)) {
 				customer = cdao.findById(userId).get();
 			} else {
-				customer = new Customer(0,0);
+				customer = new User(0,0);
 				List<FoodOrder> orders = new ArrayList<>(); 
 				customer.setOrders(orders);
 			}
 			
-			CustomerAuthenticationToken customerAuthentication = new CustomerAuthenticationToken(customer, token);
+			UserAuthenticationToken customerAuthentication = new UserAuthenticationToken(customer, token);
 			SecurityContextHolder.getContext().setAuthentication(customerAuthentication);
 		} catch (Exception e) {
 

@@ -24,7 +24,7 @@ import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
 @Controller
 @RequestMapping("/customer/{id}")
-public class CustomerOrderServiceController {
+public class OrderServiceController {
 	
 	private Logger log = Logger.getLogger("CustomerOrderServiceController");
 

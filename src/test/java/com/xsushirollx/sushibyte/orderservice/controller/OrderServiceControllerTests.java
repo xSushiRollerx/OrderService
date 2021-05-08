@@ -27,7 +27,7 @@ import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
 @AutoConfigureMockMvc
 @SpringBootTest
-public class CustomerOrderServiceControllerTests {
+public class OrderServiceControllerTests {
 
 	@Autowired
 	MockMvc mockMvc;

@@ -10,24 +10,24 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.xsushirollx.sushibyte.orderservice.model.Customer;
+import com.xsushirollx.sushibyte.orderservice.model.User;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class CustomerAuthenticationTokenTests {
 	Logger log = Logger.getLogger("CustomerAuthenticationTokenTests");		
-	CustomerAuthenticationToken token;
-	Customer c;
+	UserAuthenticationToken token;
+	User c;
 	
 	@BeforeAll
 	public void setUp() {
-		c =  new Customer(96, 1);
+		c =  new User(96, 1);
 		List<FoodOrder> orders = new ArrayList<>(); 
 		orders.add(new FoodOrder(1, 0));
 		orders.add(new FoodOrder(87, 1));
 		c.setOrders(orders);
 		
-		token = new CustomerAuthenticationToken(c,"jwttoken");
+		token = new UserAuthenticationToken(c,"jwttoken");
 	}
 	
 	@Test 
@@ -50,10 +50,10 @@ public class CustomerAuthenticationTokenTests {
 	public void getAuthoritiesRoles() {
 		
 		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("CUSTOMER")));
-		assert(new CustomerAuthenticationToken(new Customer(0, 0), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
-		assert(new CustomerAuthenticationToken(new Customer(0, 2), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR")));
-		assert(new CustomerAuthenticationToken(new Customer(0, 3), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("DRIVER")));
-		assert(new CustomerAuthenticationToken(new Customer(0, 4), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
+		assert(new UserAuthenticationToken(new User(0, 0), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
+		assert(new UserAuthenticationToken(new User(0, 2), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR")));
+		assert(new UserAuthenticationToken(new User(0, 3), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("DRIVER")));
+		assert(new UserAuthenticationToken(new User(0, 4), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
 	}
 	
 	

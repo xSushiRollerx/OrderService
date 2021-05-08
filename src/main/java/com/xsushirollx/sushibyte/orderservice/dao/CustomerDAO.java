@@ -5,19 +5,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.xsushirollx.sushibyte.orderservice.model.Customer;
+import com.xsushirollx.sushibyte.orderservice.model.User;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 @Repository
-public interface CustomerDAO extends JpaRepository<Customer, Integer> {
+public interface CustomerDAO extends JpaRepository<User, Integer> {
 
 	boolean existsByUsernameAndRole(String customer, int i);
 
 	boolean existsByEmailAndRole(String customer, int i);
 
-	Customer findByUsername(String customer);
+	User findByUsername(String customer);
 
-	Customer findByEmail(String customer);
+	User findByEmail(String customer);
 
 	Page<FoodOrder> findById(String string, Pageable of);
 

@@ -10,21 +10,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.xsushirollx.sushibyte.orderservice.model.Customer;
+import com.xsushirollx.sushibyte.orderservice.model.User;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
-public class CustomerAuthenticationToken implements Authentication {
+public class UserAuthenticationToken implements Authentication {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Customer customer;
+	private final User customer;
 	private final String jwtToken;
 
 	private Logger log = Logger.getLogger("CustomerAuthenticationToken");
 
 	private Boolean isAuthenticated = true;
 
-	public CustomerAuthenticationToken(Customer customer, String jwtToken) {
+	public UserAuthenticationToken(User customer, String jwtToken) {
 		log.log(Level.INFO, "role: " + customer.getRole());
 		this.customer = customer;
 		this.jwtToken = jwtToken;
@@ -86,7 +86,7 @@ public class CustomerAuthenticationToken implements Authentication {
 	}
 
 	@Override
-	public Customer getPrincipal() {
+	public User getPrincipal() {
 		return customer;
 	}
 
