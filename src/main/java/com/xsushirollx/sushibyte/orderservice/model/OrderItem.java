@@ -2,39 +2,51 @@ package com.xsushirollx.sushibyte.orderservice.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 
 @Entity
 @Table(name = "order_item")
 public class OrderItem {
 
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", updatable = false)
 	private Integer id;
-	
-	@Column(name = "food_id")
+
+	@Column(name = "food_id", updatable = false)
 	private Integer foodId;
-	
-	@Column(name = "order_id")
-	private Integer orderId;
-	
-	@Column(name = "count")
+
+	@Column(name = "count", updatable = false)
 	private Integer quantity;
-	
-	@Column(name = "price")
+
+	@Column(name = "price", updatable = false)
 	private Float price;
-	
-	@Column(name = "food_item_name")
+
+	@Column(name = "food_item_name", updatable = false)
 	private String name;
+
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	FoodOrder order;
 	
-	@Transient
-	private Integer isActive;
+	public OrderItem() {}
+
+	public OrderItem(OrderItemDTO orderItem) {
+		this.id = orderItem.getId();
+		this.foodId = orderItem.getFoodId();
+		this.quantity = orderItem.getQuantity();
+		this.price = orderItem.getPrice();
+		this.name = orderItem.getName();
+	}
+	
 
 	public Integer getId() {
 		return id;
@@ -50,14 +62,6 @@ public class OrderItem {
 
 	public void setFoodId(Integer foodId) {
 		this.foodId = foodId;
-	}
-
-	public Integer getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
 	}
 
 	public Integer getQuantity() {
@@ -84,18 +88,18 @@ public class OrderItem {
 		this.name = name;
 	}
 
-	public Integer getIsActive() {
-		return isActive;
+	public FoodOrder getOrder() {
+		return order;
 	}
 
-	public void setIsActive(Integer isActive) {
-		this.isActive = isActive;
+	public void setOrder(FoodOrder order) {
+		this.order = order;
 	}
 
 	@Override
 	public String toString() {
-		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" + orderId + ", quantity=" + quantity
-				+ ", price=" + price + ", name=" + name + ", isActive=" + isActive + "]";
+		return "OrderItem [id=" + id + ", foodId=" + foodId + ", orderId=" /** + orderId **/
+				+ ", quantity=" + quantity + ", price=" + price + ", name=" + name + "]";
 	}
 
 	@Override
@@ -123,7 +127,4 @@ public class OrderItem {
 		return true;
 	}
 
-	
-	
-	
 }

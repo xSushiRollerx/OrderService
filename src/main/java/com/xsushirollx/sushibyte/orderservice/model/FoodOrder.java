@@ -1,18 +1,20 @@
 package com.xsushirollx.sushibyte.orderservice.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 
 @Entity
 @Table(name = "food_order")
@@ -20,34 +22,62 @@ public class FoodOrder {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", updatable = false)
 	private Integer id;
-	
-	@Column(name = "order_state")
+
+	@Column(name = "order_state", insertable = false)
 	private Integer state;
-	
-	@Column(name = "customer_id")
+
+	@Column(name = "customer_id", updatable = false)
 	private Integer customerId;
-	
-	@Column(name = "is_refunded")
+
+	@Column(name = "is_refunded", insertable = false)
 	private Integer refunded;
 	
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "order_id")
+	@Column(name = "restaurant_id", updatable = false)
+	private Integer restaurantId;
+
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<OrderItem> orderItems;
-	
+
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
+	@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+	private Delivery address;
+
 	@JsonIgnore
-	@Column(name = "stripe")
+	@Column(name = "stripe", updatable = false)
 	private Integer stripe;
 
+	@Column(name = "date_submitted", updatable = false, insertable = false)
+	private String dateSubmitted;
+	
 	public FoodOrder() {
 	}
-	
+
 	public FoodOrder(Integer id, Integer state) {
 		this.id = id;
 		this.state = state;
 	}
 
+	public FoodOrder(FoodOrderDTO order) {
+		
+		List<OrderItem> orderItems = new ArrayList<OrderItem>();
+		for (int i = 0; i < order
+				.getOrderItems()
+				.size(); i++) {
+			orderItems.add(new OrderItem(order.getOrderItems().get(i)));
+		}
+		
+		this.id = order.getId();
+		this.state = order.getState();
+		this.customerId = order.getCustomerId();
+		this.orderItems = orderItems;
+		this.address = new Delivery(order.getAddress());
+		this.restaurantId = order.getRestaurantId();
+		
+		
+	}
+	
 	public Integer getId() {
 		return id;
 	}
@@ -79,7 +109,7 @@ public class FoodOrder {
 	public void setRefunded(Integer refunded) {
 		this.refunded = refunded;
 	}
-	
+
 	public List<OrderItem> getOrderItems() {
 		return orderItems;
 	}
@@ -88,15 +118,33 @@ public class FoodOrder {
 		this.orderItems = orderItems;
 	}
 
+	public Delivery getAddress() {
+		return address;
+	}
+
+	public void setAddress(Delivery address) {
+		this.address = address;
+	}
+
 	public Integer getStripe() {
 		return stripe;
+	}
+	
+	public Integer getRestaurantId() {
+		return restaurantId;
+	}
+
+	public void setRestaurantId(Integer restaurantId) {
+		this.restaurantId = restaurantId;
 	}
 
 	public void setStripe(Integer stripe) {
 		this.stripe = stripe;
 	}
-	
-	
+
+	public String getDateSubmitted() {
+		return dateSubmitted;
+	}
 
 	@Override
 	public String toString() {
@@ -128,9 +176,5 @@ public class FoodOrder {
 			return false;
 		return true;
 	}
-	
 
-	
-	
-	
 }

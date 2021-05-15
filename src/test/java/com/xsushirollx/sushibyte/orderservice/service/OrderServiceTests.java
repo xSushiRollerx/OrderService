@@ -1,16 +1,21 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
-import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
+import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
+import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
+import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
+import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
+
 
 @SpringBootTest
 public class OrderServiceTests {
@@ -20,170 +25,62 @@ public class OrderServiceTests {
 	@Autowired
 	OrderService orderService;
 	
-	@Test 
-	public void addOrUpdateOrderItemAdd() {
-		OrderItem o = new OrderItem();
-		o.setFoodId(2);
-		o.setOrderId(3);
-		o.setQuantity(2);
-		assert(orderService.addOrUpdateOrderItem(o, 1));
+	@Autowired
+	FoodOrderDAO fodao;
+	
+	FoodOrderDTO order;
+	
+	@BeforeEach
+	public void setUp() {
+		List<OrderItemDTO> items = new ArrayList<OrderItemDTO>();
+		items.add(new OrderItemDTO(2, 4, (float) 3.99, "Miso Soup", 5));
+		items.add(new OrderItemDTO(5, 2, (float) 8.99, "California Roll", 5));
+		items.add(new OrderItemDTO(13, 1, (float) 11.99, "Teriyaki Shrimp", 5));
+		
+		order = new FoodOrderDTO( null, 0, 1, items, new DeliveryDTO());
 	}
 	
-	@Test 
-	public void addOrUpdateOrderItemUpdate() {
-		OrderItem o = new OrderItem();
-		o.setFoodId(1);
-		o.setOrderId(3);
-		o.setQuantity(6);
-		assert(orderService.addOrUpdateOrderItem(o, 1));
+	
+	@Test
+	public void sumbitOrderHP() {
+		assert(orderService.submitOrder(order,1));
 	}
 	
 	@Test
-	public void createOrderHP() {
-		assert(orderService.createOrder(5));
+	public void getAllCustomerHP() {
+		assertEquals(orderService.getAllCustomerOrders(1).size(), 4);
 	}
 	
+	
+	
 	@Test
-	public void createOrderBasketWithState0AlreadyExistsSP() {
-		assert(!orderService.createOrder(1));
+	public void getAllCustomerSPCustomerDNE() {
+		assert(orderService.getAllCustomerOrders(222).size() == 0);
 	}
 	
 	@Test
 	public void updateOrderStateHP() {
-		FoodOrder o = new FoodOrder();
-		o.setCustomerId(2);
-		o.setId(5);
-		o.setState(2);
-		assert(orderService.updateOrderState(o));
+		assert(orderService.updateOrderState(new FoodOrderDTO(2, 2, 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
 	}
 	
 	@Test
-	public void updateOrderStateAbove4SP() {
-		FoodOrder o = new FoodOrder();
-		o.setCustomerId(1);
-		o.setId(1);
-		o.setState(5);
-		assert(!orderService.updateOrderState(o));
+	public void updateOrderStateSPWrongStateSpecifiedToUpdateTo() {
+		assert(!orderService.updateOrderState(new FoodOrderDTO(3, 2, 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
 	}
 	
 	@Test
-	public void updateOrderStateNotMatchingSP() {
-		FoodOrder o = new FoodOrder();
-		o.setCustomerId(1);
-		o.setId(1);
-		o.setState(2);
-		assert(!orderService.updateOrderState(o));
-	}
-	
-	@Test
-	public void submitOrderHP() {
-		FoodOrder o = new FoodOrder();
-		o.setCustomerId(1);
-		o.setId(3);
-		o.setState(0);
-		assert(orderService.submitOrder(o));
-	}
-	
-	@Test
-	public void submitOrderEmptySP() {
-		FoodOrder o = new FoodOrder();
-		o.setCustomerId(2);
-		o.setId(4);
-		o.setState(0);
-		assert(!orderService.submitOrder(o));
-	}
-	
-	@Test
-	public void submitOrderOrderCannotBeSubmittedSP() {
-		FoodOrder o = new FoodOrder();
-		o.setCustomerId(1);
-		o.setId(2);
-		o.setState(1);
-		assert(!orderService.submitOrder(o));
-	}
-	
-	@Test
-	public void getActiveOrderHP() {
-		assert(orderService.getActiveOrder(1).getCustomerId() == 1);
-	}
-	
-	@Test
-	public void getAllOrdersHP() {
-		assert(orderService.getAllOrders(1).size() > 0);
-	}
-	
-	@Test
-	public void getAllOrdersNoneSP() {
-		assert(orderService.getAllOrders(3).size() == 0);
-	}
-	
-	@Test
-	public void deleteOrderItemHP() {
-		OrderItem o = new OrderItem();
-		o.setFoodId(3);
-		o.setOrderId(3);
-		o.setId(4);
-		assert(orderService.deleteOrderItem(o));
-	}
-	
-	@Test
-	public void deleteOrderItemDNESP() {
-		OrderItem o = new OrderItem();
-		o.setFoodId(3);
-		o.setOrderId(3);
-		o.setId(27);
-		assert(!orderService.deleteOrderItem(o));
+	public void updateOrderStateSPStateGreaterThan5() {
+		assert(!orderService.updateOrderState(new FoodOrderDTO(6, 5, 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
 	}
 	
 	@Test
 	public void cancelOrderHP() {
-		FoodOrder order = new FoodOrder();
-		order.setId(2);
-		assert(orderService.cancelOrder(order));
+		assert(orderService.cancelOrder(new FoodOrderDTO(3, 0, 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
 	}
 	
 	@Test
-	public void cancelOrderWrongStateSP() {
-		FoodOrder order = new FoodOrder();
-		order.setId(5);
-		assert(!orderService.cancelOrder(order));
+	public void cancelOrderSP() {
+		assert(!orderService.cancelOrder(new FoodOrderDTO(5, 2, 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
 	}
 	
-	@Test
-	public void searchAllOrdersByUsernameHP() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("customer", "tsemaye");
-		log.log(Level.INFO, "Size: " + orderService.searchAllOrders(params).size());
-		assert(orderService.searchAllOrders(params).size() == 3);
-	}
-	
-	@Test
-	public void searchAllOrdersByEmailHP() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("customer", "t.oseragbaje@gmail.com");
-		assert(orderService.searchAllOrders(params).size() == 3);
-	}
-	
-	@Test
-	public void searchAllOrdersByIdHP() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("customer", "1");
-		assert(orderService.searchAllOrders(params).size() == 3);
-	}
-	
-	@Test
-	public void searchAllOrdersByStateHP() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("state", "5");
-		log.log(Level.INFO, "Size: " + orderService.searchAllOrders(params).size());
-		assert(orderService.searchAllOrders(params).size() == 1);
-	}
-	
-	@Test
-	public void searchAllOrdersByRefundedHP() {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("refunded", "1");
-		log.log(Level.INFO, "Size: " + orderService.searchAllOrders(params).size());
-		assert(orderService.searchAllOrders(params).size() == 0);
-	}
 }

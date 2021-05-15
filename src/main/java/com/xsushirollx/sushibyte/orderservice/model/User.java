@@ -12,13 +12,13 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user")
-public class Customer  {
+public class User  {
 
 	@Id
 	@Column(name = "id")
 	Integer id;
 	
-	@Column(name = "role")
+	@Column(name = "user_role")
 	Integer role;
 	
 	@Column(name = "username")
@@ -31,11 +31,11 @@ public class Customer  {
 	@JoinColumn(name = "customer_id")
 	List<FoodOrder> orders;
 	
-	public Customer() {
+	public User() {
 		super();
 	}
 
-	public Customer(Integer id, Integer role) {
+	public User(Integer id, Integer role) {
 		super();
 		this.id = id;
 		this.role = role;

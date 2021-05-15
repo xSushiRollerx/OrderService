@@ -2,32 +2,72 @@ package com.xsushirollx.sushibyte.orderservice.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
 
 @Entity
 @Table(name = "delivery")
 public class Delivery {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "street")
+	@Column(name = "street", updatable = false)
 	private String street;
 	
-	@Column(name = "city")
+	@Column(name = "city", updatable = false)
 	private String city;
 	
-	@Column(name = "state")
+	@Column(name = "state", updatable = false)
 	private String state;
 	
-	@Column(name = "zip_code")
+	@Column(name = "zip_code", updatable = false)
 	private Integer zipCode;
 	
-	@Column(name = "delivery_time")
+	@Column(name = "delivered_time", insertable = false)
 	private String deliveryTime;
 	
+	@JsonIgnore
+	@OneToOne
+    @MapsId
+    @JoinColumn(name = "id", updatable = false)
+    private FoodOrder order;
+	
+	public FoodOrder getOrder() {
+		return order;
+	}
+
+	public void setOrder(FoodOrder order) {
+		this.order = order;
+	}
+
+	public Delivery() {}
+
+	public Delivery(String street, String city, String state, Integer zipCode) {
+		super();
+		this.street = street;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+	}
+	
+	public Delivery(DeliveryDTO delivery) {
+		this.street = delivery.getStreet();
+		this.city = delivery.getCity();
+		this.state = delivery.getState();
+		this.zipCode = delivery.getZipCode();
+		this.deliveryTime = delivery.getDeliveryTime();
+	}
 
 	public Integer getId() {
 		return id;
@@ -76,8 +116,6 @@ public class Delivery {
 	public void setDeliveryTime(String deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
-	
-	
 	
 
 }
