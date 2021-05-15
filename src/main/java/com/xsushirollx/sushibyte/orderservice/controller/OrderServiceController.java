@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
+import com.xsushirollx.sushibyte.orderservice.dto.*;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
 @Controller
@@ -38,7 +38,9 @@ public class OrderServiceController {
 			orderService.submitOrder(order, customerId);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.warning("Order: " + order.toString());
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 	}
@@ -56,7 +58,8 @@ public class OrderServiceController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -69,13 +72,15 @@ public class OrderServiceController {
 			@PathVariable("id") Integer customerId,
 			@PathVariable("orderId") Integer orderId) {
 		try {
+			log.log(Level.INFO, order.toString());
 			if (orderService.cancelOrder(order)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -88,7 +93,7 @@ public class OrderServiceController {
 			return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

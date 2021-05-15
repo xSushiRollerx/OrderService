@@ -16,12 +16,9 @@ public class FoodOrderDTO {
 	
 	private String dateSubmitted;
 
-
 	private List<OrderItemDTO> orderItems;
 
-
 	private DeliveryDTO address;
-
 
 	private Integer stripe;
 

@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.xsushirollx.sushibyte.orderservice.dao.CustomerDAO;
+import com.xsushirollx.sushibyte.orderservice.dao.UserDAO;
 import com.xsushirollx.sushibyte.orderservice.model.User;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
@@ -27,7 +27,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 	JWTUtil util;
 
 	@Autowired
-	CustomerDAO cdao;
+	UserDAO cdao;
 
 
 

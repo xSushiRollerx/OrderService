@@ -62,7 +62,9 @@ public class FoodOrder {
 	public FoodOrder(FoodOrderDTO order) {
 		
 		List<OrderItem> orderItems = new ArrayList<OrderItem>();
-		for (int i = 0; i < order.getOrderItems().size(); i++) {
+		for (int i = 0; i < order
+				.getOrderItems()
+				.size(); i++) {
 			orderItems.add(new OrderItem(order.getOrderItems().get(i)));
 		}
 		

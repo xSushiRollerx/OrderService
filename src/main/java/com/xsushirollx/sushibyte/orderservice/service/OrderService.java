@@ -28,7 +28,7 @@ public class OrderService {
 	DeliveryDAO ddao;
 	
 	@Autowired
-	CustomerDAO cdao;
+	UserDAO cdao;
 	
 	public boolean submitOrder(FoodOrderDTO order, int customerId) {
 		FoodOrder o = new FoodOrder(order);
