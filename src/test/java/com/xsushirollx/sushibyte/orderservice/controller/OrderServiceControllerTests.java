@@ -74,6 +74,22 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
+	public void postOrder500() {
+		
+		FoodOrderDTO o = new FoodOrderDTO();
+		String token  = "Bearer " + util.generateToken("1");
+		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenThrow(NumberFormatException.class);
+	
+		try {
+			mockMvc.perform(post("/customer/1/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(o)))
+					.andExpect(status().isInternalServerError());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
 	public void updateOrder204() {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
@@ -100,6 +116,22 @@ public class OrderServiceControllerTests {
 			mockMvc.perform(put("/customer/1/order/3").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(o)))
 					.andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void updateOrder500() {
+		
+		FoodOrderDTO o = new FoodOrderDTO();
+		String token  = "Bearer " + util.generateToken("4");
+		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenThrow(NumberFormatException.class);
+	
+		try {
+			mockMvc.perform(put("/customer/1/order/3").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(o)))
+					.andExpect(status().isInternalServerError());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,6 +186,22 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
+	public void cancelOrder500() {
+		
+		FoodOrderDTO o = new FoodOrderDTO();
+		String token  = "Bearer " + util.generateToken("2");
+		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenThrow(NumberFormatException.class);
+	
+		try {
+			mockMvc.perform(delete("/customer/2/order/4").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(o)))
+					.andExpect(status().isInternalServerError());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
 	public void cancelOrder403() {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
@@ -179,6 +227,19 @@ public class OrderServiceControllerTests {
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void getAllOrders500() {
+		
+		String token  = "Bearer " + util.generateToken("1");
+		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenThrow(NumberFormatException.class);
+	
+		try {
+			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
