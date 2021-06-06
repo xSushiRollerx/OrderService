@@ -1,6 +1,7 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ public class OrderService {
 	FoodOrderDAO fodao;
 	
 	
-	public boolean submitOrder(FoodOrderDTO order, long customerId) {
+	public boolean submitOrder(FoodOrderDTO order, long customerId) throws SQLIntegrityConstraintViolationException  {
 		FoodOrder o = new FoodOrder(order);
 		o.setCustomerId(customerId);
 		o.getAddress().setOrder(o);

@@ -1,6 +1,7 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,7 +47,7 @@ public class OrderServiceTests {
 	
 	
 	@Test
-	public void sumbitOrderHP() {
+	public void sumbitOrderHP() throws SQLIntegrityConstraintViolationException {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
 		assert(orderService.submitOrder(order, 1));
 	}
