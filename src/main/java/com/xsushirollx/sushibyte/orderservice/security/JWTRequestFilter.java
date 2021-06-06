@@ -38,14 +38,14 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 		// assume authentication so valid jwt which starts w/ "Bearer "
 		try {
 			String token = request.getHeader("Authorization").substring(7);
-			int userId = Integer.parseInt(util.extractUserId(request.getHeader("Authorization").substring(7)));
+			Long userId = Long.parseLong(util.extractUserId(request.getHeader("Authorization").substring(7)));
 			
 			User customer = null;
 			
 			if (util.validateToken(token)) {
 				customer = cdao.findById(userId).get();
 			} else {
-				customer = new User(0,0);
+				customer = new User((long) 0,0);
 				List<FoodOrder> orders = new ArrayList<>(); 
 				customer.setOrders(orders);
 			}

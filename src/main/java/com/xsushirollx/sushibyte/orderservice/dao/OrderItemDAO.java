@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 
 @Repository
-public interface OrderItemDAO extends JpaRepository<OrderItem, Integer> {
+public interface OrderItemDAO extends JpaRepository<OrderItem, Long> {
 }

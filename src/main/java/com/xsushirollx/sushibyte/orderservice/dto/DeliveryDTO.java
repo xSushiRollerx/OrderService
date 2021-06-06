@@ -1,8 +1,10 @@
 package com.xsushirollx.sushibyte.orderservice.dto;
 
+import com.xsushirollx.sushibyte.orderservice.model.Delivery;
+
 public class DeliveryDTO {
 	
-	private Integer id;
+	private Long id;
 	
 	private String street;
 
@@ -21,14 +23,21 @@ public class DeliveryDTO {
 		this.state = state;
 		this.zipCode = zipCode;
 	}
+	public DeliveryDTO(Delivery delivery) {
+		this.street = delivery.getStreet();
+		this.city = delivery.getCity();
+		this.state = delivery.getState();
+		this.zipCode = delivery.getZipCode();
+		this.deliveryTime = delivery.getDeliveryTime();
+	}
 
 	public DeliveryDTO() {}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

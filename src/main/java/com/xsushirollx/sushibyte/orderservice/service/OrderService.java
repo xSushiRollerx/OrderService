@@ -1,6 +1,7 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,21 +17,12 @@ import com.xsushirollx.sushibyte.orderservice.model.*;
 public class OrderService {
 
 	Logger log = Logger.getLogger("OrerService");
-	
-	@Autowired
-	OrderItemDAO odao;
 
 	@Autowired
 	FoodOrderDAO fodao;
-
 	
-	@Autowired
-	DeliveryDAO ddao;
 	
-	@Autowired
-	UserDAO cdao;
-	
-	public boolean submitOrder(FoodOrderDTO order, int customerId) {
+	public boolean submitOrder(FoodOrderDTO order, long customerId) {
 		FoodOrder o = new FoodOrder(order);
 		o.setCustomerId(customerId);
 		o.getAddress().setOrder(o);
@@ -42,8 +34,9 @@ public class OrderService {
 		return true;
 	}
 	
-	public List<FoodOrder> getAllCustomerOrders(int customerId) {
-		return fodao.findByCustomerId(customerId);
+	public List<FoodOrderDTO> getAllCustomerOrders(Long customerId) {
+		
+		return Arrays.asList(fodao.findByCustomerId(customerId).stream().map(o -> new FoodOrderDTO(o)).toArray(FoodOrderDTO[]::new));
 	}
 	
 	

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.xsushirollx.sushibyte.orderservice.model.Delivery;
 
 @Repository
-public interface DeliveryDAO extends JpaRepository<Delivery, Integer> {
+public interface DeliveryDAO extends JpaRepository<Delivery, Long> {
 
 }

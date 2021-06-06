@@ -33,7 +33,7 @@ public class OrderServiceController {
 
 	@UpdatePermission
 	@PostMapping(value = "/order")
-	public ResponseEntity<?> submitOrder(@RequestBody FoodOrderDTO order, @PathVariable("id") Integer customerId, @RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> submitOrder(@RequestBody FoodOrderDTO order, @PathVariable("id") Long customerId, @RequestHeader("Authorization") String token) {
 		try {
 			orderService.submitOrder(order, customerId);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -86,7 +86,7 @@ public class OrderServiceController {
 	
 	@UpdatePermission
 	@GetMapping(value = "/orders")
-	public ResponseEntity<?> getAllOrders(@PathVariable("id") Integer customerId, @RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId, @RequestHeader("Authorization") String token) {
 		log.log(Level.INFO, "get Start");
 		//security: check loaded user is the same as the one specified in the url path
 		try {

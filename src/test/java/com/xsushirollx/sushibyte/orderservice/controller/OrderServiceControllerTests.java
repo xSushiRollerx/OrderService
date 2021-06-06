@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
-import com.xsushirollx.sushibyte.orderservice.model.*;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
@@ -223,7 +222,7 @@ public class OrderServiceControllerTests {
 	public void getAllOrders200() {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenReturn(new ArrayList<FoodOrder>());
+		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -236,7 +235,7 @@ public class OrderServiceControllerTests {
 	public void getAllOrders500() {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenThrow(NumberFormatException.class);
+		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenThrow(NumberFormatException.class);
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
@@ -248,7 +247,7 @@ public class OrderServiceControllerTests {
 	@Test
 	public void getAllOrders403() {
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenReturn(new ArrayList<FoodOrder>());
+		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
 			mockMvc.perform(get("/customer/2/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());

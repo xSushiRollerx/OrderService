@@ -21,10 +21,10 @@ public class CustomerAuthenticationTokenTests {
 	
 	@BeforeAll
 	public void setUp() {
-		c =  new User(96, 1);
+		c =  new User((long) 96, 1);
 		List<FoodOrder> orders = new ArrayList<>(); 
-		orders.add(new FoodOrder(1, 0));
-		orders.add(new FoodOrder(87, 1));
+		orders.add(new FoodOrder((long) 1, 0));
+		orders.add(new FoodOrder((long) 87, 1));
 		c.setOrders(orders);
 		
 		token = new UserAuthenticationToken(c,"jwttoken");
@@ -50,10 +50,10 @@ public class CustomerAuthenticationTokenTests {
 	public void getAuthoritiesRoles() {
 		
 		assert(token.getAuthorities().contains(new SimpleGrantedAuthority("CUSTOMER")));
-		assert(new UserAuthenticationToken(new User(0, 0), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
-		assert(new UserAuthenticationToken(new User(0, 2), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR")));
-		assert(new UserAuthenticationToken(new User(0, 3), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("DRIVER")));
-		assert(new UserAuthenticationToken(new User(0, 4), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
+		assert(new UserAuthenticationToken(new User((long) 0, 0), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
+		assert(new UserAuthenticationToken(new User((long) 0, 2), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR")));
+		assert(new UserAuthenticationToken(new User((long) 0, 3), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("DRIVER")));
+		assert(new UserAuthenticationToken(new User((long) 0, 4), "credentials").getAuthorities().contains(new SimpleGrantedAuthority("NONE")));
 	}
 	
 	

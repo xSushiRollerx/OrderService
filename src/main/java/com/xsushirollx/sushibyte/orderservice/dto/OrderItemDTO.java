@@ -1,11 +1,12 @@
 package com.xsushirollx.sushibyte.orderservice.dto;
 
+import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 
 public class OrderItemDTO {
 
-	private Integer id;
+	private Long id;
 
-	private Integer foodId;
+	private Long foodId;
 
 	private Integer quantity;
 
@@ -13,9 +14,9 @@ public class OrderItemDTO {
 
 	private String name;
 
-	private Integer restaurantId;
+	private Long restaurantId;
 
-	public OrderItemDTO(Integer foodId, Integer quantity, Float price, String name, Integer restaurantId) {
+	public OrderItemDTO(Long foodId, Integer quantity, Float price, String name, Long restaurantId) {
 		super();
 		this.foodId = foodId;
 		this.quantity = quantity;
@@ -23,20 +24,28 @@ public class OrderItemDTO {
 		this.name = name;
 		this.restaurantId = restaurantId;
 	}
+	
+	public OrderItemDTO(OrderItem orderItem) {
+		this.id = orderItem.getId();
+		this.foodId = orderItem.getFoodId();
+		this.quantity = orderItem.getQuantity();
+		this.price = orderItem.getPrice();
+		this.name = orderItem.getName();
+	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Integer getFoodId() {
+	public Long getFoodId() {
 		return foodId;
 	}
 
-	public void setFoodId(Integer foodId) {
+	public void setFoodId(Long foodId) {
 		this.foodId = foodId;
 	}
 
@@ -64,11 +73,11 @@ public class OrderItemDTO {
 		this.name = name;
 	}
 	
-	public Integer getRestaurantId() {
+	public Long getRestaurantId() {
 		return this.restaurantId;
 	}
 	
-	public void setRestaurantId(Integer restaurantId) {
+	public void setRestaurantId(Long restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 
