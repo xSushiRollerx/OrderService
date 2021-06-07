@@ -19,10 +19,10 @@ public class OrderItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", updatable = false)
-	private Integer id;
+	private Long id;
 
 	@Column(name = "food_id", updatable = false)
-	private Integer foodId;
+	private Long foodId;
 
 	@Column(name = "count", updatable = false)
 	private Integer quantity;
@@ -34,7 +34,7 @@ public class OrderItem {
 	private String name;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	FoodOrder order;
 	
 	public OrderItem() {}
@@ -48,19 +48,19 @@ public class OrderItem {
 	}
 	
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Integer getFoodId() {
+	public Long getFoodId() {
 		return foodId;
 	}
 
-	public void setFoodId(Integer foodId) {
+	public void setFoodId(Long foodId) {
 		this.foodId = foodId;
 	}
 

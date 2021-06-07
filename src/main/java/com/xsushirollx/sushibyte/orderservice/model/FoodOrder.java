@@ -23,19 +23,19 @@ public class FoodOrder {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", updatable = false)
-	private Integer id;
+	private Long id;
 
 	@Column(name = "order_state", insertable = false)
 	private Integer state;
 
 	@Column(name = "customer_id", updatable = false)
-	private Integer customerId;
+	private Long customerId;
 
 	@Column(name = "is_refunded", insertable = false)
 	private Integer refunded;
 	
 	@Column(name = "restaurant_id", updatable = false)
-	private Integer restaurantId;
+	private Long restaurantId;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<OrderItem> orderItems;
@@ -54,7 +54,7 @@ public class FoodOrder {
 	public FoodOrder() {
 	}
 
-	public FoodOrder(Integer id, Integer state) {
+	public FoodOrder(Long id, Integer state) {
 		this.id = id;
 		this.state = state;
 	}
@@ -78,11 +78,11 @@ public class FoodOrder {
 		
 	}
 	
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -94,11 +94,11 @@ public class FoodOrder {
 		this.state = state;
 	}
 
-	public Integer getCustomerId() {
+	public Long getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(Integer customerId) {
+	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
 	}
 
@@ -130,11 +130,11 @@ public class FoodOrder {
 		return stripe;
 	}
 	
-	public Integer getRestaurantId() {
+	public Long getRestaurantId() {
 		return restaurantId;
 	}
 
-	public void setRestaurantId(Integer restaurantId) {
+	public void setRestaurantId(Long restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 

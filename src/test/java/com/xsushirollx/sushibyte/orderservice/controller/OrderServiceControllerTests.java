@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
-import com.xsushirollx.sushibyte.orderservice.model.*;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
@@ -42,7 +42,7 @@ public class OrderServiceControllerTests {
 	JWTUtil util;
 	
 	@Test
-	public void postOrder204() {
+	public void postOrder201() throws SQLIntegrityConstraintViolationException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("1");
@@ -51,14 +51,14 @@ public class OrderServiceControllerTests {
 		try {
 			mockMvc.perform(post("/customer/1/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(o)))
-					.andExpect(status().isNoContent());
+					.andExpect(status().isCreated());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Test
-	public void postOrder403() {
+	public void postOrder403() throws SQLIntegrityConstraintViolationException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("1");
@@ -68,22 +68,6 @@ public class OrderServiceControllerTests {
 			mockMvc.perform(post("/customer/2/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(o)))
 					.andExpect(status().isForbidden());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Test
-	public void postOrder500() {
-		
-		FoodOrderDTO o = new FoodOrderDTO();
-		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenThrow(NumberFormatException.class);
-	
-		try {
-			mockMvc.perform(post("/customer/1/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(o)))
-					.andExpect(status().isInternalServerError());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -223,7 +207,7 @@ public class OrderServiceControllerTests {
 	public void getAllOrders200() {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenReturn(new ArrayList<FoodOrder>());
+		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -236,7 +220,7 @@ public class OrderServiceControllerTests {
 	public void getAllOrders500() {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenThrow(NumberFormatException.class);
+		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenThrow(NumberFormatException.class);
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
@@ -248,7 +232,7 @@ public class OrderServiceControllerTests {
 	@Test
 	public void getAllOrders403() {
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyInt())).thenReturn(new ArrayList<FoodOrder>());
+		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
 			mockMvc.perform(get("/customer/2/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());

@@ -1,16 +1,20 @@
 package com.xsushirollx.sushibyte.orderservice.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
+import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 
 public class FoodOrderDTO {
 
-	private Integer id;
+	private Long id;
 
 	private Integer state;
 
-	private Integer customerId;
+	private Long customerId;
 
-	private Integer restaurantId;
+	private Long restaurantId;
 	
 	private Integer refunded;
 	
@@ -20,17 +24,17 @@ public class FoodOrderDTO {
 
 	private DeliveryDTO address;
 
-	private Integer stripe;
+	private Long stripe;
 
 	public FoodOrderDTO() {
 	}
 
-	public FoodOrderDTO(Integer id, Integer state) {
+	public FoodOrderDTO(Long id, Integer state) {
 		this.id = id;
 		this.state = state;
 	}
 
-	public FoodOrderDTO(Integer id, Integer state, Integer customerId, List<OrderItemDTO> orderItems, DeliveryDTO address) {
+	public FoodOrderDTO( Long id, Integer state, Long customerId, List<OrderItemDTO> orderItems, DeliveryDTO address) {
 		super();
 		this.id = id;
 		this.state = state;
@@ -38,12 +42,29 @@ public class FoodOrderDTO {
 		this.orderItems = orderItems;
 		this.address = address;
 	}
+	
+public FoodOrderDTO(FoodOrder order) {
+		
+		List<OrderItemDTO> orderItems = new ArrayList<OrderItemDTO>();
+		for (OrderItem o :  order.getOrderItems()) {
+			orderItems.add(new OrderItemDTO(o));
+		}
+		
+		this.id = order.getId();
+		this.state = order.getState();
+		this.customerId = order.getCustomerId();
+		this.orderItems = orderItems;
+		this.address = new DeliveryDTO(order.getAddress());
+		this.restaurantId = order.getRestaurantId();
+		
+		
+	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -55,11 +76,11 @@ public class FoodOrderDTO {
 		this.state = state;
 	}
 
-	public Integer getCustomerId() {
+	public Long getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(Integer customerId) {
+	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
 	}
 
@@ -87,11 +108,11 @@ public class FoodOrderDTO {
 		this.address = address;
 	}
 
-	public Integer getStripe() {
+	public Long getStripe() {
 		return stripe;
 	}
 
-	public void setStripe(Integer stripe) {
+	public void setStripe(Long stripe) {
 		this.stripe = stripe;
 	}
 
@@ -101,11 +122,11 @@ public class FoodOrderDTO {
 				+ ", orderItems=" + orderItems + ", stripe=" + stripe + "]";
 	}
 	
-	public Integer getRestaurantId() {
+	public Long getRestaurantId() {
 		return restaurantId;
 	}
 
-	public void setRestaurantId(Integer restaurantId) {
+	public void setRestaurantId(Long restaurantId) {
 		this.restaurantId = restaurantId;
 	}
 	
