@@ -2,6 +2,7 @@ package com.xsushirollx.sushibyte.orderservice.service;
 
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.xsushirollx.sushibyte.orderservice.dao.*;
+import com.xsushirollx.sushibyte.orderservice.dto.EventDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.model.*;
 
@@ -34,6 +36,25 @@ public class OrderService {
 		fodao.save(o);
 		return true;
 	}
+	
+	
+	public boolean submitOrder(EventDTO event) throws SQLIntegrityConstraintViolationException  {
+		List<FoodOrder> orders = new ArrayList<>();
+		for (FoodOrderDTO o : event.getDescription()) {
+			FoodOrder order = new FoodOrder(o); 
+			order.getAddress().setOrder(order);
+			order.setStripe(event.getClient_secret());
+			
+			for (OrderItem i : order.getOrderItems()) {
+				i.setOrder(order);
+			}
+			orders.add(order);
+		}
+		
+		fodao.saveAll(orders);
+		return true;
+	}
+	
 	
 	public List<FoodOrderDTO> getAllCustomerOrders(Long customerId) {
 		

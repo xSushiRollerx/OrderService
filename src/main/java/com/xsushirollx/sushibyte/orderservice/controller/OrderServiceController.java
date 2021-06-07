@@ -48,6 +48,23 @@ public class OrderServiceController {
 		}
 
 	}
+	
+	@UpdatePermission
+	@PostMapping(value = "/order")
+	public ResponseEntity<?> submitOrder(@RequestBody EventDTO order, @PathVariable("id") String stripeId,
+			@RequestHeader("Authorization") String token) {
+		try {
+			orderService.submitOrder(order);
+			return new ResponseEntity<>(HttpStatus.CREATED);
+		} catch (SQLIntegrityConstraintViolationException e) {
+			return new ResponseEntity<>("Status 400: This Order Fields Are Not Filled Out Properly. Please Make Sure All Fields Are Complete and the User And Restaurant For This Order Exists.", HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			log.warning("Order: " + order.toString());
+			e.printStackTrace();
+			return new ResponseEntity<>("Status 500: Something Went Wrong.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 
 	@PreAuthorize("hasAuthority('ADMINISTRATOR')")
 	@PutMapping(value = "/order/{orderId}")
