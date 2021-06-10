@@ -46,7 +46,7 @@ public class FoodOrder {
 
 	@JsonIgnore
 	@Column(name = "stripe", updatable = false)
-	private Integer stripe;
+	private String stripe;
 
 	@Column(name = "date_submitted", updatable = false, insertable = false)
 	private String dateSubmitted;
@@ -126,7 +126,7 @@ public class FoodOrder {
 		this.address = address;
 	}
 
-	public Integer getStripe() {
+	public String getStripe() {
 		return stripe;
 	}
 	
@@ -138,7 +138,7 @@ public class FoodOrder {
 		this.restaurantId = restaurantId;
 	}
 
-	public void setStripe(Integer stripe) {
+	public void setStripe(String stripe) {
 		this.stripe = stripe;
 	}
 

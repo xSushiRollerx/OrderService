@@ -19,7 +19,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stripe.model.Event;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
@@ -68,6 +71,21 @@ public class OrderServiceControllerTests {
 			mockMvc.perform(post("/customer/2/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(o)))
 					.andExpect(status().isForbidden());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void postStripeOrder201() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException {
+		
+		String token  = "Bearer " + util.generateToken("1");
+		when(orderService.submitOrder(Mockito.any(Event.class))).thenReturn(true);
+	
+		try {
+			mockMvc.perform(post("/stripe/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(new Event())))
+					.andExpect(status().isCreated());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
