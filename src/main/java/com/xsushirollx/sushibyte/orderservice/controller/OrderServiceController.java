@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.stripe.model.Event;
 import com.xsushirollx.sushibyte.orderservice.dto.*;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
 @Controller
-@RequestMapping("/customer/{id}")
 public class OrderServiceController {
 
 	private Logger log = Logger.getLogger("CustomerOrderServiceController");
@@ -33,7 +33,7 @@ public class OrderServiceController {
 	OrderService orderService;
 
 	@UpdatePermission
-	@PostMapping(value = "/order")
+	@PostMapping(value = "/customer/{id}/order")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrderDTO order, @PathVariable("id") Long customerId,
 			@RequestHeader("Authorization") String token) {
 		try {
@@ -48,9 +48,25 @@ public class OrderServiceController {
 		}
 
 	}
+	
+	@PostMapping(value = "/stripe/order")
+	public ResponseEntity<?> submitOrder(@RequestBody Event order, 
+			@RequestHeader("Stripe-Signature") String signature) {
+		try {
+			orderService.submitOrder(order);
+			return new ResponseEntity<>(HttpStatus.CREATED);
+		} catch (SQLIntegrityConstraintViolationException | JsonProcessingException e) {
+			return new ResponseEntity<>("Status 400: This Order Fields Are Not Filled Out Properly. Please Make Sure All Fields Are Complete and the User And Restaurant For This Order Exists.", HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			log.warning("Order: " + order.toString());
+			e.printStackTrace();
+			return new ResponseEntity<>("Status 500: Something Went Wrong.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 
 	@PreAuthorize("hasAuthority('ADMINISTRATOR')")
-	@PutMapping(value = "/order/{orderId}")
+	@PutMapping(value = "/customer/{id}/order/{orderId}")
 	public ResponseEntity<?> updateOrderState(@PathVariable("orderId") Integer orderId, @RequestBody FoodOrderDTO order,
 			@RequestHeader("Authorization") String token) {
 		try {
@@ -67,7 +83,7 @@ public class OrderServiceController {
 
 	@UpdatePermission
 	@PreAuthorize("(hasAuthority('CUSTOMER') and hasAuthority('ORDER ' + #orderId)) or hasAuthority('ADMINISTRATOR')")
-	@DeleteMapping(value = "/order/{orderId}")
+	@DeleteMapping(value = "/customer/{id}/order/{orderId}")
 	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrderDTO order, @RequestHeader("Authorization") String token,
 			@PathVariable("id") Integer customerId, @PathVariable("orderId") Integer orderId) {
 		try {
@@ -84,7 +100,7 @@ public class OrderServiceController {
 	}
 
 	@UpdatePermission
-	@GetMapping(value = "/orders")
+	@GetMapping(value = "/customer/{id}/orders")
 	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId,
 			@RequestHeader("Authorization") String token) {
 		log.log(Level.INFO, "get Start");
@@ -99,6 +115,7 @@ public class OrderServiceController {
 
 	// <-------------------------------------------------- SECURITY CONFIG
 	// ---------------------------------------------------------------->
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@PreAuthorize("(hasAuthority('CUSTOMER') and principal.id == #customerId) or (hasAuthority('ADMINISTRATOR'))")
 	private @interface UpdatePermission {

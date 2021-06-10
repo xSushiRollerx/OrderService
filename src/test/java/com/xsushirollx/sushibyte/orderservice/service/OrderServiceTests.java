@@ -1,6 +1,5 @@
 package com.xsushirollx.sushibyte.orderservice.service;
 
-
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Event;
+import com.stripe.model.EventData;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
 import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
@@ -35,6 +45,14 @@ public class OrderServiceTests {
 	
 	FoodOrderDTO order;
 	
+	@SuppressWarnings("deprecation")
+	JsonParser parser = new JsonParser();
+	
+	@Autowired
+	ObjectMapper mapper;
+	
+	private final String API_KEY = "sk_test_51Iwe6JI3Xcs3HqD58EIktgAoDmcfazeFLBufgPihXrAcbclMf9E1CzBM1OWll7Xrf0wIDyoaGUoQkFMXyOt99L5h004AmBompb";
+	
 	@BeforeEach
 	public void setUp() {
 		List<OrderItemDTO> items = new ArrayList<OrderItemDTO>();
@@ -51,6 +69,26 @@ public class OrderServiceTests {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
 		assert(orderService.submitOrder(order, 1));
 	}
+	
+	@Test
+	public void sumbitEventOrderHP() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException, StripeException {
+		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
+		Stripe.apiKey = API_KEY;
+		Event event = new Event();
+		EventData data = new EventData();
+		List<FoodOrderDTO> orders = new ArrayList<>();
+		orders.add(order);
+		PaymentIntent intent = PaymentIntent.create(PaymentIntentCreateParams.builder().setAmount((long) 1000).setCurrency("usd").setDescription( mapper.writeValueAsString(orders)).build());
+		@SuppressWarnings("deprecation")
+		JsonObject object = parser.parse(intent.toJson()).getAsJsonObject();
+		
+		data.setObject(object);
+		event.setData(data);
+		log.info(event.toString());
+		
+		assert(orderService.submitOrder(event));
+	}
+	
 	
 	@Test
 	public void getAllCustomerHP() {
