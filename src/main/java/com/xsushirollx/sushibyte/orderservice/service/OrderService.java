@@ -11,19 +11,30 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.xsushirollx.sushibyte.orderservice.dao.*;
-import com.xsushirollx.sushibyte.orderservice.dto.EventDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.model.*;
-
+import com.stripe.model.Event;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 @Service
 public class OrderService {
 
-	Logger log = Logger.getLogger("OrerService");
-
+	Logger log = Logger.getLogger("OrderService");
+	
 	@Autowired
 	FoodOrderDAO fodao;
 	
+	@Autowired
+	ObjectMapper mapper;
+	
+	
+	@SuppressWarnings("deprecation")
+	JsonParser parser = new JsonParser();
 	
 	public boolean submitOrder(FoodOrderDTO order, long customerId) throws SQLIntegrityConstraintViolationException  {
 		FoodOrder o = new FoodOrder(order);
@@ -38,12 +49,18 @@ public class OrderService {
 	}
 	
 	
-	public boolean submitOrder(EventDTO event) throws SQLIntegrityConstraintViolationException  {
+	
+	@SuppressWarnings("deprecation")
+	public boolean submitOrder(Event event) throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException  {
+		JsonArray description = parser.parse(parser.parse(event.getData().toJson()).getAsJsonObject().get("object").getAsJsonObject().get("description").getAsString()).getAsJsonArray();
+		log.info(description.toString());
+
+		
 		List<FoodOrder> orders = new ArrayList<>();
-		for (FoodOrderDTO o : event.getDescription()) {
-			FoodOrder order = new FoodOrder(o); 
+		for (JsonElement o : description) {
+			FoodOrder order = new FoodOrder(mapper.readValue(o.toString(), FoodOrderDTO.class)); 
 			order.getAddress().setOrder(order);
-			order.setStripe(event.getClient_secret());
+			order.setStripe(parser.parse(event.getData().toJson()).getAsJsonObject().get("object").getAsJsonObject().get("id").getAsString());
 			
 			for (OrderItem i : order.getOrderItems()) {
 				i.setOrder(order);
