@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.stripe.model.Event;
 import com.xsushirollx.sushibyte.orderservice.dto.*;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
@@ -36,49 +37,28 @@ public class OrderServiceController {
 	@PostMapping(value = "/customer/{id}/order")
 	public ResponseEntity<?> submitOrder(@RequestBody FoodOrderDTO order, @PathVariable("id") Long customerId,
 			@RequestHeader("Authorization") String token) {
-		try {
-			orderService.submitOrder(order, customerId);
-			return new ResponseEntity<>(HttpStatus.CREATED);
-		} catch (SQLIntegrityConstraintViolationException e) {
-			return new ResponseEntity<>("Status 400: This Order Fields Are Not Filled Out Properly. Please Make Sure All Fields Are Complete and the User And Restaurant For This Order Exists.", HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			log.warning("Order: " + order.toString());
-			e.printStackTrace();
-			return new ResponseEntity<>("Status 500: Something Went Wrong.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+
+		return new ResponseEntity<>(HttpStatus.CREATED);
 
 	}
 	
 	@PostMapping(value = "/stripe/order")
 	public ResponseEntity<?> submitOrder(@RequestBody Event order, 
-			@RequestHeader("Stripe-Signature") String signature) {
-		try {
-			orderService.submitOrder(order);
-			return new ResponseEntity<>(HttpStatus.CREATED);
-		} catch (SQLIntegrityConstraintViolationException | JsonProcessingException e) {
-			return new ResponseEntity<>("Status 400: This Order Fields Are Not Filled Out Properly. Please Make Sure All Fields Are Complete and the User And Restaurant For This Order Exists.", HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			log.warning("Order: " + order.toString());
-			e.printStackTrace();
-			return new ResponseEntity<>("Status 500: Something Went Wrong.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
+			@RequestHeader("Stripe-Signature") String signature) throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException {
+		orderService.submitOrder(order);
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAuthority('ADMINISTRATOR')")
 	@PutMapping(value = "/customer/{id}/order/{orderId}")
 	public ResponseEntity<?> updateOrderState(@PathVariable("orderId") Integer orderId, @RequestBody FoodOrderDTO order,
 			@RequestHeader("Authorization") String token) {
-		try {
+		
 			if (orderService.updateOrderState(order)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>("Status 400: Either This Order Does Not Exists Or This Order Is Not Allowed To Be Updated To The Specified State.", HttpStatus.BAD_REQUEST);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>("Status 500: Something Went Wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 
 	@UpdatePermission
@@ -86,17 +66,12 @@ public class OrderServiceController {
 	@DeleteMapping(value = "/customer/{id}/order/{orderId}")
 	public ResponseEntity<?> cancelOrder(@RequestBody FoodOrderDTO order, @RequestHeader("Authorization") String token,
 			@PathVariable("id") Integer customerId, @PathVariable("orderId") Integer orderId) {
-		try {
 			log.log(Level.INFO, order.toString());
 			if (orderService.cancelOrder(order)) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			} else {
 				return new ResponseEntity<>("Status 400: This Order Could Not Be Cancelled. Either this Order Does Not Exists Or This Order Is No Longer Pending And ThereFore Can No Longer Be Cancelled.", HttpStatus.BAD_REQUEST);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>("Status 500: Something Went Wrong.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 
 	@UpdatePermission
@@ -104,13 +79,8 @@ public class OrderServiceController {
 	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId,
 			@RequestHeader("Authorization") String token) {
 		log.log(Level.INFO, "get Start");
-		// security: check loaded user is the same as the one specified in the url path
-		try {
-			return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId), HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>("Status 500: Something Went Wrong.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		
+		return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId), HttpStatus.OK);
 	}
 
 	// <-------------------------------------------------- SECURITY CONFIG
