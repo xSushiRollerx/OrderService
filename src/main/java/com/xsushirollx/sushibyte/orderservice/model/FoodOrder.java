@@ -15,6 +15,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
+import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 
 @Entity
 @Table(name = "food_order")
@@ -62,10 +63,8 @@ public class FoodOrder {
 	public FoodOrder(FoodOrderDTO order) {
 		
 		List<OrderItem> orderItems = new ArrayList<OrderItem>();
-		for (int i = 0; i < order
-				.getOrderItems()
-				.size(); i++) {
-			orderItems.add(new OrderItem(order.getOrderItems().get(i)));
+		for (OrderItemDTO o : order.getOrderItems()) {
+			orderItems.add(new OrderItem(o));
 		}
 		
 		this.id = order.getId();
