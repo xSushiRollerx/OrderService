@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
+import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 
@@ -67,7 +69,8 @@ public class OrderServiceTests {
 	@Test
 	public void sumbitOrderHP() throws SQLIntegrityConstraintViolationException {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		assert(orderService.submitOrder(order, 1));
+		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
+		orderService.submitOrder(order, 1);
 	}
 	
 	@Test
@@ -86,7 +89,7 @@ public class OrderServiceTests {
 		event.setData(data);
 		log.info(event.toString());
 		
-		assert(orderService.submitOrder(event));
+		orderService.submitOrder(event);
 	}
 	
 	
@@ -97,32 +100,35 @@ public class OrderServiceTests {
 	}
 	
 	@Test
-	public void updateOrderStateHP() {
+	public void updateOrderStateHP() throws OrderServiceException {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder());
-		assert(orderService.updateOrderState(new FoodOrderDTO((long) 2, 2, (long) 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
+		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
+		orderService.updateOrderState(new FoodOrderDTO((long) 2, 2, (long) 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO()));
 	}
 	
 	@Test
 	public void updateOrderStateSPWrongStateSpecifiedToUpdateTo() {
-		assert(!orderService.updateOrderState(new FoodOrderDTO((long) 3, 2, (long) 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
+		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(false);
+		assertThrows(OrderServiceException.class, () -> {orderService.updateOrderState(new FoodOrderDTO((long) 3, 2, (long) 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())); });
 	}
 	
 	@Test
 	public void updateOrderStateSPStateGreaterThan5() {
-		assert(!orderService.updateOrderState(new FoodOrderDTO((long) 6, 5, (long) 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
+		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(false);
+		assertThrows(OrderServiceException.class, () -> {orderService.updateOrderState(new FoodOrderDTO((long) 6, 5, (long) 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO())); });
 	}
 	
 	@Test
-	public void cancelOrderHP() {
+	public void cancelOrderHP() throws OrderServiceException {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder());
-		assert(orderService.cancelOrder(new FoodOrderDTO((long) 3, 0, (long) 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
+		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
+		orderService.cancelOrder(new FoodOrderDTO((long) 3, 0, (long) 1, new ArrayList<OrderItemDTO>(), new DeliveryDTO()));
 	}
 	
 	@Test
 	public void cancelOrderSP() {
-		assert(!orderService.cancelOrder(new FoodOrderDTO((long) 5, 2, (long) 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO())));
+		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(false);
+		assertThrows(OrderServiceException.class, () -> {orderService.cancelOrder(new FoodOrderDTO((long) 5, 2, (long) 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO()));});
 	}
 	
 }

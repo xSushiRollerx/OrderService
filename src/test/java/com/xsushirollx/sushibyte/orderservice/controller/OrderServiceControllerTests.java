@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.Event;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
+import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
 import com.xsushirollx.sushibyte.orderservice.service.OrderService;
 
@@ -49,7 +50,7 @@ public class OrderServiceControllerTests {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenReturn(true);
+		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenReturn(new FoodOrderDTO());
 	
 		try {
 			mockMvc.perform(post("/customer/1/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +66,7 @@ public class OrderServiceControllerTests {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenReturn(true);
+		when(orderService.submitOrder(Mockito.any(FoodOrderDTO.class), Mockito.anyInt())).thenReturn(new FoodOrderDTO());
 	
 		try {
 			mockMvc.perform(post("/customer/2/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +81,7 @@ public class OrderServiceControllerTests {
 	public void postStripeOrder201() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.submitOrder(Mockito.any(Event.class))).thenReturn(true);
+		when(orderService.submitOrder(Mockito.any(Event.class))).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
 			mockMvc.perform(post("/stripe/order").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -92,27 +93,27 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void updateOrder204() {
+	public void updateOrder200() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("4");
-		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenReturn(true);
+		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenReturn(new FoodOrderDTO());
 	
 		try {
 			mockMvc.perform(put("/customer/1/order/3").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(o)))
-					.andExpect(status().isNoContent());
+					.andExpect(status().isOk());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Test
-	public void updateOrder400() {
+	public void updateOrder400() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("4");
-		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenReturn(false);
+		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenThrow(new OrderServiceException("Error"));
 	
 		try {
 			mockMvc.perform(put("/customer/1/order/3").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +125,7 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void updateOrder500() {
+	public void updateOrder500() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("4");
@@ -140,11 +141,11 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void updateOrder403() {
+	public void updateOrder403() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenReturn(false);
+		when(orderService.updateOrderState(Mockito.any(FoodOrderDTO.class))).thenThrow(new OrderServiceException("Error"));
 	
 		try {
 			mockMvc.perform(put("/customer/1/order/5").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -156,11 +157,11 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void cancelOrder204() {
+	public void cancelOrder204() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("4");
-		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenReturn(true);
+		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenReturn(new FoodOrderDTO());
 	
 		try {
 			mockMvc.perform(delete("/customer/1/order/3").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -172,11 +173,11 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void cancelOrder400() {
+	public void cancelOrder400() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("2");
-		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenReturn(false);
+		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenThrow(OrderServiceException.class);
 	
 		try {
 			mockMvc.perform(delete("/customer/2/order/4").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
@@ -188,7 +189,7 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void cancelOrder500() {
+	public void cancelOrder500() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("2");
@@ -204,11 +205,11 @@ public class OrderServiceControllerTests {
 	}
 	
 	@Test
-	public void cancelOrder403() {
+	public void cancelOrder403() throws OrderServiceException {
 		
 		FoodOrderDTO o = new FoodOrderDTO();
 		String token  = "Bearer " + util.generateToken("2");
-		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenReturn(false);
+		when(orderService.cancelOrder(Mockito.any(FoodOrderDTO.class))).thenReturn(new FoodOrderDTO());
 	
 		try {
 			mockMvc.perform(delete("/customer/2/order/3").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)

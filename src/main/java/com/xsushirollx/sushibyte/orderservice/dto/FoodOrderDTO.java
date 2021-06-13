@@ -2,6 +2,7 @@ package com.xsushirollx.sushibyte.orderservice.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
@@ -25,6 +26,8 @@ public class FoodOrderDTO {
 	private DeliveryDTO address;
 
 	private Long stripe;
+	
+	Logger log = Logger.getLogger("FoodOrderDTO");
 
 	public FoodOrderDTO() {
 	}
@@ -46,6 +49,9 @@ public class FoodOrderDTO {
 public FoodOrderDTO(FoodOrder order) {
 		
 		List<OrderItemDTO> orderItems = new ArrayList<OrderItemDTO>();
+	
+		log.info(order.getOrderItems().toString());
+		
 		for (OrderItem o :  order.getOrderItems()) {
 			orderItems.add(new OrderItemDTO(o));
 		}
