@@ -30,6 +30,7 @@ public class OrderControllerAdvice {
 	@ExceptionHandler(value = Exception.class)
 	public ResponseEntity<?> exception(Exception e) {
 		log.info(e.getMessage());
+		e.printStackTrace();
 		if (e.getMessage() != null && e.getMessage().equalsIgnoreCase("Access is denied")) {
 			return new ResponseEntity<>("Status 403: Access Denied", HttpStatus.FORBIDDEN);
 		}
