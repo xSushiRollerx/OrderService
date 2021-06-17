@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -222,11 +223,12 @@ public class OrderServiceControllerTests {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getAllOrders200() {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrderDTO>());
+		when(orderService.getAllCustomerOrders(Mockito.anyLong(), Mockito.any(Map.class))).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -235,11 +237,12 @@ public class OrderServiceControllerTests {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getAllOrders500() {
 		
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenThrow(NumberFormatException.class);
+		when(orderService.getAllCustomerOrders(Mockito.anyLong(), Mockito.any(Map.class))).thenThrow(NumberFormatException.class);
 	
 		try {
 			mockMvc.perform(get("/customer/1/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isInternalServerError());
@@ -248,13 +251,14 @@ public class OrderServiceControllerTests {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getAllOrders403() {
 		String token  = "Bearer " + util.generateToken("1");
-		when(orderService.getAllCustomerOrders(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrderDTO>());
+		when(( orderService.getAllCustomerOrders(Mockito.anyLong(), Mockito.any(Map.class)))).thenReturn(new ArrayList<FoodOrderDTO>());
 	
 		try {
-			mockMvc.perform(get("/customer/2/orders").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+			mockMvc.perform(get("/customer/2/orders?sort=newest&&page=2").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
