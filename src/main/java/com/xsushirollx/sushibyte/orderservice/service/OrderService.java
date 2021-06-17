@@ -5,6 +5,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +19,10 @@ import com.stripe.model.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -72,9 +77,11 @@ public class OrderService {
 	}
 	
 	
-	public List<FoodOrderDTO> getAllCustomerOrders(Long customerId) {
+	public List<FoodOrderDTO> getAllCustomerOrders(Long customerId, Map<String, String> params) {
 		
-		return Arrays.asList(fodao.findByCustomerId(customerId).stream().map(o -> new FoodOrderDTO(o)).toArray(FoodOrderDTO[]::new));
+		return Arrays.asList(fodao.findByCustomerId(customerId, PageRequest.of(Integer.parseInt(params.get("page")), Integer.parseInt(params.get("pageSize"))
+				, Sort.by(params.get("sort").equalsIgnoreCase("oldest") ? Direction.ASC : Direction.DESC, "dateSubmitted")))
+				.stream().map(o -> new FoodOrderDTO(o)).toArray(FoodOrderDTO[]::new));
 	}
 	
 	

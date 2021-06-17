@@ -2,7 +2,9 @@ package com.xsushirollx.sushibyte.orderservice.service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,6 +15,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -95,8 +99,12 @@ public class OrderServiceTests {
 	
 	@Test
 	public void getAllCustomerHP() {
-		when(fdao.findByCustomerId(Mockito.anyLong())).thenReturn(new ArrayList<FoodOrder>());
-		orderService.getAllCustomerOrders((long) 1);
+		when(fdao.findByCustomerId(Mockito.anyLong(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<FoodOrder>(new ArrayList<FoodOrder>()));
+		Map<String, String> params = new HashMap<>();
+		params.put("page", "2");
+		params.put("pageSize", "10");
+		params.put("sort", "newest");
+		orderService.getAllCustomerOrders((long) 1, params);
 	}
 	
 	@Test

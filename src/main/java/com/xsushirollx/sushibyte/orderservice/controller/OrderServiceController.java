@@ -3,6 +3,7 @@ package com.xsushirollx.sushibyte.orderservice.controller;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -68,11 +70,11 @@ public class OrderServiceController {
 
 	@UpdatePermission
 	@GetMapping(value = "/customer/{id}/orders")
-	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId,
-			@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId, @RequestParam(defaultValue = "0", value = "page") String page, @RequestParam(defaultValue = "newest", value = "sort") String sort,
+			@RequestParam(defaultValue = "10", value = "pageSize") String pageSize, @RequestParam Map<String, String> params, @RequestHeader("Authorization") String token) {
 		log.log(Level.INFO, "get Start");
 		
-		return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId), HttpStatus.OK);
+		return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId, params), HttpStatus.OK);
 	}
 
 	// <-------------------------------------------------- SECURITY CONFIG
