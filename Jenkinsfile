@@ -42,9 +42,9 @@ pipeline {
                 echo "Docker Build...."
                 sh "aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin ${AWS_ID}.dkr.ecr.us-west-1.amazonaws.com"
                 sh "docker build --tag ${IMG_NAME}:${COMMIT_HASH} ."
-                sh "docker tag ${IMG_NAME}:${COMMIT_HASH} ${AWS_ID}${REPO_URL}${COMMIT_HASH}"
+                sh "docker tag ${IMG_NAME}:${COMMIT_HASH} ${AWS_ID}.dkr.ecr.us-west-1.amazonaws.com/${REPO_URL}:${COMMIT_HASH}"
                 echo "Docker Push..."
-                sh "docker push ${AWS_ID}.dkr.ecr.us-west-1.amazonaws.com/${IMG_NAME}:${COMMIT_HASH}"
+                sh "docker push ${AWS_ID}.dkr.ecr.us-west-1.amazonaws.com/${REPO_URL}:${COMMIT_HASH}"
             }
         }
 //         stage("Deploy") {
