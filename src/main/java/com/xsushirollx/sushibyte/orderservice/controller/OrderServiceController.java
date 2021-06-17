@@ -70,8 +70,8 @@ public class OrderServiceController {
 
 	@UpdatePermission
 	@GetMapping(value = "/customer/{id}/orders")
-	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId, @RequestParam(defaultValue = "0", value = "page") String page, @RequestParam(defaultValue = "newest", value = "sort") String sort,
-			@RequestParam(defaultValue = "10", value = "pageSize") String pageSize, @RequestParam Map<String, String> params, @RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> getAllOrders(@PathVariable("id") Long customerId, @RequestParam(defaultValue = "0", value = "page") String page, @RequestParam(defaultValue = "newest", value = "sort", required = false) String sort,
+			@RequestParam(defaultValue = "10", value = "pageSize", required = false) String pageSize, @RequestParam Map<String, String> params, @RequestHeader("Authorization") String token) {
 		log.log(Level.INFO, "get Start");
 		
 		return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId, params), HttpStatus.OK);
