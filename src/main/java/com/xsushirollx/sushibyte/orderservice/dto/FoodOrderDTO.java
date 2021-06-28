@@ -14,8 +14,6 @@ public class FoodOrderDTO {
 	private Integer state;
 
 	private Long customerId;
-
-	private Long restaurantId;
 	
 	private Integer refunded;
 	
@@ -26,6 +24,8 @@ public class FoodOrderDTO {
 	private DeliveryDTO address;
 
 	private Long stripe;
+	
+	private RestaurantDTO restaurant;
 	
 	Logger log = Logger.getLogger("FoodOrderDTO");
 
@@ -61,7 +61,7 @@ public FoodOrderDTO(FoodOrder order) {
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
 		this.address = new DeliveryDTO(order.getAddress());
-		this.restaurantId = order.getRestaurantId();
+		this.setRestaurant(new RestaurantDTO(order.getRestaurant()));
 		
 		
 	}
@@ -128,14 +128,6 @@ public FoodOrderDTO(FoodOrder order) {
 				+ ", orderItems=" + orderItems + ", stripe=" + stripe + "]";
 	}
 	
-	public Long getRestaurantId() {
-		return restaurantId;
-	}
-
-	public void setRestaurantId(Long restaurantId) {
-		this.restaurantId = restaurantId;
-	}
-	
 	public String getDateSubmitted() {
 		return dateSubmitted;
 	}
@@ -163,6 +155,14 @@ public FoodOrderDTO(FoodOrder order) {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	public RestaurantDTO getRestaurant() {
+		return restaurant;
+	}
+
+	public void setRestaurant(RestaurantDTO restaurant) {
+		this.restaurant = restaurant;
 	}
 
 }

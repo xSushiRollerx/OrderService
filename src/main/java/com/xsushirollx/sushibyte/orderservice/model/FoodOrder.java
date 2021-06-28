@@ -9,11 +9,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 
@@ -35,8 +35,8 @@ public class FoodOrder {
 	@Column(name = "is_refunded", insertable = false)
 	private Integer refunded;
 	
-	@Column(name = "restaurant_id", updatable = false)
-	private Long restaurantId;
+//	@Column(name = "restaurant_id", updatable = false)
+//	private Long restaurantId;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<OrderItem> orderItems;
@@ -44,8 +44,11 @@ public class FoodOrder {
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 	private Delivery address;
+	
+	@OneToOne
+	@JoinColumn(name = "restaurant_id")
+	private Restaurant restaurant;
 
-	@JsonIgnore
 	@Column(name = "stripe", updatable = false)
 	private String stripe;
 
@@ -72,8 +75,7 @@ public class FoodOrder {
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
 		this.address = new Delivery(order.getAddress());
-		this.restaurantId = order.getRestaurantId();
-		
+		this.restaurant = new Restaurant(order.getRestaurant());
 		
 	}
 	
@@ -128,14 +130,6 @@ public class FoodOrder {
 	public String getStripe() {
 		return stripe;
 	}
-	
-	public Long getRestaurantId() {
-		return restaurantId;
-	}
-
-	public void setRestaurantId(Long restaurantId) {
-		this.restaurantId = restaurantId;
-	}
 
 	public void setStripe(String stripe) {
 		this.stripe = stripe;
@@ -143,6 +137,14 @@ public class FoodOrder {
 
 	public String getDateSubmitted() {
 		return dateSubmitted;
+	}
+
+	public Restaurant getRestaurant() {
+		return restaurant;
+	}
+
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
 	}
 
 	@Override
