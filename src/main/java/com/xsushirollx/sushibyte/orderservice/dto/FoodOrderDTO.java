@@ -61,7 +61,10 @@ public FoodOrderDTO(FoodOrder order) {
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
 		this.address = new DeliveryDTO(order.getAddress());
-		this.setRestaurant(new RestaurantDTO(order.getRestaurant()));
+		try {
+			this.setRestaurant(new RestaurantDTO(order.getRestaurant()));
+		} catch (NullPointerException e) {}
+		
 		
 		
 	}

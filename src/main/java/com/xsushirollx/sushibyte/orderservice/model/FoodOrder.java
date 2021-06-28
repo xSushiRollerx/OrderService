@@ -75,7 +75,9 @@ public class FoodOrder {
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
 		this.address = new Delivery(order.getAddress());
+		try {
 		this.restaurant = new Restaurant(order.getRestaurant());
+		} catch (NullPointerException e) {}
 		
 	}
 	
