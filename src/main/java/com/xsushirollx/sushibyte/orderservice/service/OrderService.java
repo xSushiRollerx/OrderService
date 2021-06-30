@@ -19,6 +19,8 @@ import com.stripe.model.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -79,9 +81,11 @@ public class OrderService {
 	
 	public List<FoodOrderDTO> getAllCustomerOrders(Long customerId, Map<String, String> params) {
 		
-		return Arrays.asList(fodao.findByCustomerId(customerId, PageRequest.of(Integer.parseInt(params.get("page")), Integer.parseInt(params.get("pageSize"))
-				, Sort.by(params.get("sort").equalsIgnoreCase("oldest") ? Direction.ASC : Direction.DESC, "dateSubmitted")))
-				.stream().map(o -> new FoodOrderDTO(o)).toArray(FoodOrderDTO[]::new));
+		Page<FoodOrder> orders = fodao.findByCustomerId(customerId, PageRequest.of(Integer.parseInt(params.get("page")), Integer.parseInt(params.get("pageSize"))
+				, Sort.by(params.get("sort").equalsIgnoreCase("oldest") ? Direction.ASC : Direction.DESC, "dateSubmitted")));
+		Long totalCount = orders.getTotalElements();
+		
+		return Arrays.asList(orders.stream().map(o -> new FoodOrderDTO(o, totalCount)).toArray(FoodOrderDTO[]::new));
 	}
 	
 	

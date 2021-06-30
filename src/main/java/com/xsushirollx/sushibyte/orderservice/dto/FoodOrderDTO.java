@@ -28,6 +28,8 @@ public class FoodOrderDTO {
 	private RestaurantDTO restaurant;
 	
 	Logger log = Logger.getLogger("FoodOrderDTO");
+	
+	private Long numberOfOrders;
 
 	public FoodOrderDTO() {
 	}
@@ -46,7 +48,7 @@ public class FoodOrderDTO {
 		this.address = address;
 	}
 	
-public FoodOrderDTO(FoodOrder order) {
+	public FoodOrderDTO(FoodOrder order) {
 		
 		List<OrderItemDTO> orderItems = new ArrayList<OrderItemDTO>();
 	
@@ -69,6 +71,32 @@ public FoodOrderDTO(FoodOrder order) {
 		
 	}
 
+public FoodOrderDTO(FoodOrder order, Long totalCount) {
+		
+		List<OrderItemDTO> orderItems = new ArrayList<OrderItemDTO>();
+	
+		log.info(order.getOrderItems().toString());
+		
+		for (OrderItem o :  order.getOrderItems()) {
+			orderItems.add(new OrderItemDTO(o));
+		}
+		
+		this.id = order.getId();
+		this.state = order.getState();
+		this.customerId = order.getCustomerId();
+		this.orderItems = orderItems;
+		this.address = new DeliveryDTO(order.getAddress());
+		this.numberOfOrders = totalCount;
+		try {
+			this.setRestaurant(new RestaurantDTO(order.getRestaurant()));
+		} catch (NullPointerException e) {}
+		
+		
+		
+	}
+
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -141,6 +169,14 @@ public FoodOrderDTO(FoodOrder order) {
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
+	}
+
+	public Long getNumberOfOrders() {
+		return numberOfOrders;
+	}
+
+	public void setNumberOfOrders(Long numberOfOrders) {
+		this.numberOfOrders = numberOfOrders;
 	}
 
 	@Override
