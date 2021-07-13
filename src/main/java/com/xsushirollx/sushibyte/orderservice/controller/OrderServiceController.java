@@ -82,12 +82,30 @@ public class OrderServiceController {
 	public ResponseEntity<?> driverOrderRequest() {
 		log.log(Level.INFO, "get Start");
 		
-		FoodOrderDTO order = orderService.driverRequestOrder();
+		DriverOrderDTO order = orderService.driverRequestOrder();
 		if (order != null) {
 			return new ResponseEntity<>(order, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>("No available orders at this time", HttpStatus.OK);
 		}
+		
+	}
+	
+	@PreAuthorize("(hasAuthority('DRIVER') and principal.id == #driverId) or (hasAuthority('ADMINISTRATOR'))")
+	@PutMapping(value = "/driver/{driverId}/order/{orderId}")
+	public ResponseEntity<?> driverOrderAcceptance(@PathVariable("driverId") Long driverId, @PathVariable("orderId") Long orderId) throws OrderServiceException {
+		log.log(Level.INFO, "get Start");
+		
+		return new ResponseEntity<>(orderService.driverAcceptOrder(orderId, driverId), HttpStatus.OK);
+		
+	}
+	
+	@PreAuthorize("(hasAuthority('DRIVER') and principal.id == #driverId) or (hasAuthority('ADMINISTRATOR'))")
+	@PutMapping(value = "/order/{orderId}")
+	public ResponseEntity<?> driverOrderDecline(@PathVariable("orderId") Long orderId) throws OrderServiceException {
+		log.log(Level.INFO, "get Start");
+		orderService.driverDeclineOrder(orderId);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		
 	}
 

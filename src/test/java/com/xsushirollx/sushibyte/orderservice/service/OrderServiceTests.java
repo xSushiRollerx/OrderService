@@ -30,12 +30,14 @@ import com.stripe.model.Event;
 import com.stripe.model.EventData;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.xsushirollx.sushibyte.orderservice.dao.DriverFoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
 import com.xsushirollx.sushibyte.orderservice.model.Delivery;
+import com.xsushirollx.sushibyte.orderservice.model.DriverFoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 
@@ -46,6 +48,9 @@ public class OrderServiceTests {
 	
 	@MockBean
 	FoodOrderDAO fdao;
+	
+	@MockBean
+	DriverFoodOrderDAO dodao;
 
 	@Autowired
 	OrderService orderService;
@@ -88,6 +93,7 @@ public class OrderServiceTests {
 		List<FoodOrderDTO> orders = new ArrayList<>();
 		orders.add(order);
 		PaymentIntent intent = PaymentIntent.create(PaymentIntentCreateParams.builder().setAmount((long) 1000).setCurrency("usd").setDescription( mapper.writeValueAsString(orders)).build());
+		
 		@SuppressWarnings("deprecation")
 		JsonObject object = parser.parse(intent.toJson()).getAsJsonObject();
 		
@@ -143,22 +149,61 @@ public class OrderServiceTests {
 	
 	@Test
 	public void driverRequestOrderHP() throws OrderServiceException {
-		List<FoodOrder> order = new ArrayList<>();
-		order.add(new FoodOrder((long) 234435, 2));
-		when(fdao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<FoodOrder>(order));
-		FoodOrder dto = new FoodOrder((long) 2344, 2);
+		List<DriverFoodOrder> order = new ArrayList<>();
+		order.add(new DriverFoodOrder((long) 234435, 2));
+		
+		when(dodao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<DriverFoodOrder>(order));
+		
+		DriverFoodOrder dto = new DriverFoodOrder((long) 2344, 2);
 		dto.setOrderItems(new ArrayList<>());
 		dto.setAddress(new Delivery());
-		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(dto);
+		
+		when(dodao.save(Mockito.any(DriverFoodOrder.class))).thenReturn(dto);
 		assert(orderService.driverRequestOrder() != null);
 	}
 	
 	@Test
 	public void driverRequestOrderSP() throws OrderServiceException {
-		List<FoodOrder> order = new ArrayList<>();
-		when(fdao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<FoodOrder>(order));
+		List<DriverFoodOrder> order = new ArrayList<>();
+		when(dodao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<DriverFoodOrder>(order));
 		
 		assertEquals(orderService.driverRequestOrder(), null);
+	}
+	
+	@Test
+	public void driverAcceptOrderHP() throws OrderServiceException {
+		
+		DriverFoodOrder order = new DriverFoodOrder((long) 2344, 2);
+		order.setOrderItems(new ArrayList<>());
+		order.setAddress(new Delivery());
+		when(dodao.findByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(order);
+		
+		when(dodao.save(Mockito.any(DriverFoodOrder.class))).thenReturn(order);
+		assert(orderService.driverAcceptOrder((long) 12345, (long) 98765) != null);
+	}
+	
+	@Test
+	public void driverAcceptOrderSP() throws OrderServiceException {
+		
+		assertThrows(OrderServiceException.class, () -> {orderService.driverAcceptOrder((long) 12345, (long) 98765);});
+	}
+	
+	@Test
+	public void driverDeclineOrderHP() throws OrderServiceException {
+		
+		DriverFoodOrder order = new DriverFoodOrder((long) 2344, 2);
+		order.setOrderItems(new ArrayList<>());
+		order.setAddress(new Delivery());
+		when(dodao.findByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(order);
+		
+		when(dodao.save(Mockito.any(DriverFoodOrder.class))).thenReturn(order);
+		assert(orderService.driverDeclineOrder((long) 12343) != null);
+	}
+	
+	@Test
+	public void driverDeclineOrderSP() throws OrderServiceException {
+		
+		assertThrows(OrderServiceException.class, () -> {orderService.driverDeclineOrder((long) 12345);});
 	}
 	
 }

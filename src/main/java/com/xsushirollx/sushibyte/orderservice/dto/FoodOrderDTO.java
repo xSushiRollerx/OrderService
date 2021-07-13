@@ -14,8 +14,6 @@ public class FoodOrderDTO {
 	private Integer state;
 
 	private Long customerId;
-
-	private Long restaurantId;
 	
 	private Integer refunded;
 	
@@ -23,6 +21,8 @@ public class FoodOrderDTO {
 
 	private List<OrderItemDTO> orderItems;
 
+	private Long restaurantId;
+	
 	private DeliveryDTO address;
 
 	private Long stripe;
@@ -46,7 +46,7 @@ public class FoodOrderDTO {
 		this.address = address;
 	}
 	
-public FoodOrderDTO(FoodOrder order) {
+	public FoodOrderDTO(FoodOrder order) {
 		
 		List<OrderItemDTO> orderItems = new ArrayList<OrderItemDTO>();
 	
@@ -62,8 +62,6 @@ public FoodOrderDTO(FoodOrder order) {
 		this.orderItems = orderItems;
 		this.address = new DeliveryDTO(order.getAddress());
 		this.restaurantId = order.getRestaurantId();
-		
-		
 	}
 
 	public Long getId() {
@@ -128,14 +126,6 @@ public FoodOrderDTO(FoodOrder order) {
 				+ ", orderItems=" + orderItems + ", stripe=" + stripe + "]";
 	}
 	
-	public Long getRestaurantId() {
-		return restaurantId;
-	}
-
-	public void setRestaurantId(Long restaurantId) {
-		this.restaurantId = restaurantId;
-	}
-	
 	public String getDateSubmitted() {
 		return dateSubmitted;
 	}
@@ -164,5 +154,15 @@ public FoodOrderDTO(FoodOrder order) {
 			return false;
 		return true;
 	}
+
+	public Long getRestaurantId() {
+		return restaurantId;
+	}
+
+	public void setRestaurantId(Long restaurantId) {
+		this.restaurantId = restaurantId;
+	}
+	
+	
 
 }

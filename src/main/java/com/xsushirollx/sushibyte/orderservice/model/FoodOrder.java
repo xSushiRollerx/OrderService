@@ -44,6 +44,7 @@ public class FoodOrder {
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 	private Delivery address;
+	
 
 	@JsonIgnore
 	@Column(name = "stripe", updatable = false)
@@ -73,7 +74,6 @@ public class FoodOrder {
 		this.orderItems = orderItems;
 		this.address = new Delivery(order.getAddress());
 		this.restaurantId = order.getRestaurantId();
-		
 		
 	}
 	
@@ -175,5 +175,6 @@ public class FoodOrder {
 			return false;
 		return true;
 	}
+
 
 }

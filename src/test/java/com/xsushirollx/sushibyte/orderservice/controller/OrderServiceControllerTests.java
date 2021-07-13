@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.Event;
+import com.xsushirollx.sushibyte.orderservice.dto.DriverOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
 import com.xsushirollx.sushibyte.orderservice.security.JWTUtil;
@@ -267,7 +268,7 @@ public class OrderServiceControllerTests {
 	@Test
 	public void driverRequestExists200() {
 		String token  = "Bearer " + util.generateToken("4");
-		when(( orderService.driverRequestOrder())).thenReturn(new FoodOrderDTO());
+		when(( orderService.driverRequestOrder())).thenReturn(new DriverOrderDTO());
 	
 		try {
 			mockMvc.perform(get("/driver/order/").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
@@ -287,6 +288,52 @@ public class OrderServiceControllerTests {
 			e.printStackTrace();
 		}
 	}
-
 	
+	@Test
+	public void driverAccept200() throws OrderServiceException {
+		String token  = "Bearer " + util.generateToken("4");
+		when(orderService.driverAcceptOrder(Mockito.anyLong(), Mockito.anyLong())).thenReturn(null);
+	
+		try {
+			mockMvc.perform(put("/driver/123/order/6789").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void driverAccept400() throws OrderServiceException {
+		String token  = "Bearer " + util.generateToken("4");
+		when(orderService.driverAcceptOrder(Mockito.anyLong(), Mockito.anyLong())).thenThrow(OrderServiceException.class);
+	
+		try {
+			mockMvc.perform(put("/driver/123/order/6789").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void driverDecline200() throws OrderServiceException {
+		String token  = "Bearer " + util.generateToken("4");
+		when(orderService.driverDeclineOrder(Mockito.anyLong())).thenReturn(null);
+	
+		try {
+			mockMvc.perform(put("/order/6789").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void driverDecline400() throws OrderServiceException {
+		String token  = "Bearer " + util.generateToken("4");
+		when(orderService.driverDeclineOrder(Mockito.anyLong())).thenThrow(OrderServiceException.class);
+	
+		try {
+			mockMvc.perform(put("/order/6789").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

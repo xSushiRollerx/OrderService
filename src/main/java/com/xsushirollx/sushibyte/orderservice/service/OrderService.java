@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.xsushirollx.sushibyte.orderservice.dao.*;
+import com.xsushirollx.sushibyte.orderservice.dto.DriverOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
 import com.xsushirollx.sushibyte.orderservice.model.*;
@@ -37,6 +38,9 @@ public class OrderService {
 
 	@Autowired
 	ObjectMapper mapper;
+	
+	@Autowired
+	DriverFoodOrderDAO dodao;
 
 	@SuppressWarnings("deprecation")
 	JsonParser parser = new JsonParser();
@@ -101,13 +105,36 @@ public class OrderService {
 
 	}
 
-	public FoodOrderDTO driverRequestOrder() {
+	public DriverOrderDTO driverRequestOrder() {
 		try {
-			FoodOrder o = fodao.findByState(2, PageRequest.of(0, 1)).getContent().get(0);
+			DriverFoodOrder o = dodao.findByState(2, PageRequest.of(0, 1)).getContent().get(0);
 			o.setState(6);
-			return new FoodOrderDTO(fodao.save(o));
+			return new DriverOrderDTO(dodao.save(o));
 		} catch (IndexOutOfBoundsException e) {
 			return null;
+		}
+
+	}
+	
+	public DriverOrderDTO driverAcceptOrder(Long orderId, Long driverId) throws OrderServiceException {
+		try {
+			DriverFoodOrder o = dodao.findByIdAndState(orderId, 6);
+			o.setState(3);
+			o.getAddress().setDriverId(driverId);
+			return new DriverOrderDTO(dodao.save(o));
+		} catch (NullPointerException e) {
+			throw new OrderServiceException("Order Does Not Exist or Is No Longer Available for Pick Up");
+		}
+
+	}
+	
+	public DriverOrderDTO driverDeclineOrder(Long orderId) throws OrderServiceException {
+		try {
+			DriverFoodOrder o = dodao.findByIdAndState(orderId, 6);
+			o.setState(2);
+			return new DriverOrderDTO(dodao.save(o));
+		} catch (NullPointerException e) {
+			throw new OrderServiceException("Order Does Not Exist");
 		}
 
 	}
