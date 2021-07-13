@@ -15,4 +15,6 @@ public interface FoodOrderDAO extends JpaRepository<FoodOrder, Long> {
 
 	boolean existsByIdAndState(long id, int state);
 
+	Page<FoodOrder> findByState(int state, Pageable pageRequest);
+
 }

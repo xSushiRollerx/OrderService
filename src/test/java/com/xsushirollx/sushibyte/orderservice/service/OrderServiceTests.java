@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,7 @@ import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
+import com.xsushirollx.sushibyte.orderservice.model.Delivery;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 
@@ -137,6 +139,26 @@ public class OrderServiceTests {
 	public void cancelOrderSP() {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(false);
 		assertThrows(OrderServiceException.class, () -> {orderService.cancelOrder(new FoodOrderDTO((long) 5, 2, (long) 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO()));});
+	}
+	
+	@Test
+	public void driverRequestOrderHP() throws OrderServiceException {
+		List<FoodOrder> order = new ArrayList<>();
+		order.add(new FoodOrder((long) 234435, 2));
+		when(fdao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<FoodOrder>(order));
+		FoodOrder dto = new FoodOrder((long) 2344, 2);
+		dto.setOrderItems(new ArrayList<>());
+		dto.setAddress(new Delivery());
+		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(dto);
+		assert(orderService.driverRequestOrder() != null);
+	}
+	
+	@Test
+	public void driverRequestOrderSP() throws OrderServiceException {
+		List<FoodOrder> order = new ArrayList<>();
+		when(fdao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<FoodOrder>(order));
+		
+		assertEquals(orderService.driverRequestOrder(), null);
 	}
 	
 }

@@ -264,4 +264,29 @@ public class OrderServiceControllerTests {
 		}
 	}
 	
+	@Test
+	public void driverRequestExists200() {
+		String token  = "Bearer " + util.generateToken("4");
+		when(( orderService.driverRequestOrder())).thenReturn(new FoodOrderDTO());
+	
+		try {
+			mockMvc.perform(get("/driver/order/").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void driverRequestDNE200() {
+		String token  = "Bearer " + util.generateToken("4");
+		when(( orderService.driverRequestOrder())).thenReturn(null);
+	
+		try {
+			mockMvc.perform(get("/driver/order/").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
 }

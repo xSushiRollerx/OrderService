@@ -76,6 +76,20 @@ public class OrderServiceController {
 		
 		return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId, params), HttpStatus.OK);
 	}
+	
+	@PreAuthorize("hasAnyAuthority('DRIVER', 'ADMINISTRATOR')")
+	@GetMapping(value = "/driver/order")
+	public ResponseEntity<?> driverOrderRequest() {
+		log.log(Level.INFO, "get Start");
+		
+		FoodOrderDTO order = orderService.driverRequestOrder();
+		if (order != null) {
+			return new ResponseEntity<>(order, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("No available orders at this time", HttpStatus.OK);
+		}
+		
+	}
 
 	// <-------------------------------------------------- SECURITY CONFIG
 	// ---------------------------------------------------------------->
@@ -84,5 +98,7 @@ public class OrderServiceController {
 	@PreAuthorize("(hasAuthority('CUSTOMER') and principal.id == #customerId) or (hasAuthority('ADMINISTRATOR'))")
 	private @interface UpdatePermission {
 	}
+	
+	
 
 }
