@@ -35,6 +35,8 @@ public class Restaurant {
 	@Column(name = "zip_code", insertable = false, updatable = false)
 	private Integer zipCode;
 	
+	public Restaurant() {}
+	
 	public Restaurant(RestaurantDTO restaurant) {
 		this.city = restaurant.getCity();
 		this.id = restaurant.getId();
