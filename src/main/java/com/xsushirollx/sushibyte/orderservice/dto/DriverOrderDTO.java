@@ -41,7 +41,7 @@ public DriverOrderDTO(DriverFoodOrder order) {
 		this.state = order.getState();
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
-		this.address = new DeliveryDTO(order.getAddress());
+		this.address = order.getAddress() == null ? null : new DeliveryDTO(order.getAddress());
 		this.restaurant = order.getRestaurant() == null ? null : new RestaurantDTO(order.getRestaurant());
 	}
 
