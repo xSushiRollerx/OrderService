@@ -23,7 +23,7 @@ public class Restaurant {
 	@Column(name = "name", insertable = false, updatable = false)
 	private String name;
 	
-	@Column(name = "street_address", insertable = false, updatable = false)
+	@Column(name = "street", insertable = false, updatable = false)
 	private String streetAddress;
 
 	@Column(name = "city", insertable = false, updatable = false)
