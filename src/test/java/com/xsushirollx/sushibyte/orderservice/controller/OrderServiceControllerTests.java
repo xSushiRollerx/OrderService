@@ -282,7 +282,7 @@ public class OrderServiceControllerTests {
 		when(( orderService.driverRequestOrder())).thenReturn(null);
 	
 		try {
-			mockMvc.perform(get("/driver/order/").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+			mockMvc.perform(get("/driver/order/").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

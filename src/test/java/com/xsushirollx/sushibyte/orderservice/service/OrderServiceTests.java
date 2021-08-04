@@ -77,32 +77,32 @@ public class OrderServiceTests {
 	}
 	
 	
-	@Test
-	public void sumbitOrderHP() throws SQLIntegrityConstraintViolationException {
-		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
-		orderService.submitOrder(order, 1);
-	}
-	
-	@Test
-	public void sumbitEventOrderHP() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException, StripeException {
-		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		Stripe.apiKey = API_KEY;
-		Event event = new Event();
-		EventData data = new EventData();
-		List<FoodOrderDTO> orders = new ArrayList<>();
-		orders.add(order);
-		PaymentIntent intent = PaymentIntent.create(PaymentIntentCreateParams.builder().setAmount((long) 1000).setCurrency("usd").setDescription( mapper.writeValueAsString(orders)).build());
-		
-		@SuppressWarnings("deprecation")
-		JsonObject object = parser.parse(intent.toJson()).getAsJsonObject();
-		
-		data.setObject(object);
-		event.setData(data);
-		log.info(event.toString());
-		
-		orderService.submitOrder(event);
-	}
+//	@Test
+//	public void sumbitOrderHP() throws SQLIntegrityConstraintViolationException {
+//		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
+//		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
+//		orderService.submitOrder(order, 1);
+//	}
+//	
+//	@Test
+//	public void sumbitEventOrderHP() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException, StripeException {
+//		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
+//		Stripe.apiKey = API_KEY;
+//		Event event = new Event();
+//		EventData data = new EventData();
+//		List<FoodOrderDTO> orders = new ArrayList<>();
+//		orders.add(order);
+//		PaymentIntent intent = PaymentIntent.create(PaymentIntentCreateParams.builder().setAmount((long) 1000).setCurrency("usd").setDescription( mapper.writeValueAsString(orders)).build());
+//		
+//		@SuppressWarnings("deprecation")
+//		JsonObject object = parser.parse(intent.toJson()).getAsJsonObject();
+//		
+//		data.setObject(object);
+//		event.setData(data);
+//		log.info(event.toString());
+//		
+//		orderService.submitOrder(event);
+//	}
 	
 	
 	@Test

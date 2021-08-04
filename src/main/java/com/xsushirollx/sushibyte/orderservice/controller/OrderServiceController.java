@@ -86,7 +86,7 @@ public class OrderServiceController {
 		if (order != null) {
 			return new ResponseEntity<>(order, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>("No available orders at this time", HttpStatus.OK);
+			return new ResponseEntity<>("No available orders at this time", HttpStatus.NO_CONTENT);
 		}
 		
 	}
