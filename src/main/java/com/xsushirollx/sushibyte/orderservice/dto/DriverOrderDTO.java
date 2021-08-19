@@ -2,55 +2,36 @@ package com.xsushirollx.sushibyte.orderservice.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
+import com.xsushirollx.sushibyte.orderservice.model.DriverFoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.OrderItem;
 
-public class FoodOrderDTO {
+public class DriverOrderDTO {
 
 	private Long id;
 
 	private Integer state;
 
 	private Long customerId;
-	
+
 	private Integer refunded;
-	
-	private String dateSubmitted;
 
 	private List<OrderItemDTO> orderItems;
 
-	private Long restaurantId;
-	
 	private DeliveryDTO address;
-
-	private Long stripe;
 	
-	Logger log = Logger.getLogger("FoodOrderDTO");
+	private RestaurantDTO restaurant;
 
-	public FoodOrderDTO() {
-	}
+	private String stripe;
 
-	public FoodOrderDTO(Long id, Integer state) {
-		this.id = id;
-		this.state = state;
-	}
-
-	public FoodOrderDTO( Long id, Integer state, Long customerId, List<OrderItemDTO> orderItems, DeliveryDTO address) {
-		super();
-		this.id = id;
-		this.state = state;
-		this.customerId = customerId;
-		this.orderItems = orderItems;
-		this.address = address;
-	}
+	private String dateSubmitted;
 	
-	public FoodOrderDTO(FoodOrder order) {
+	public DriverOrderDTO() {
+	}
+
+public DriverOrderDTO(DriverFoodOrder order) {
 		
 		List<OrderItemDTO> orderItems = new ArrayList<OrderItemDTO>();
-	
-		log.info(order.getOrderItems().toString());
 		
 		for (OrderItem o :  order.getOrderItems()) {
 			orderItems.add(new OrderItemDTO(o));
@@ -60,10 +41,11 @@ public class FoodOrderDTO {
 		this.state = order.getState();
 		this.customerId = order.getCustomerId();
 		this.orderItems = orderItems;
-		this.address = new DeliveryDTO(order.getAddress());
-		this.restaurantId = order.getRestaurantId();
+		this.address = order.getAddress() == null ? null : new DeliveryDTO(order.getAddress());
+		this.restaurant = order.getRestaurant() == null ? null : new RestaurantDTO(order.getRestaurant());
 	}
 
+	
 	public Long getId() {
 		return id;
 	}
@@ -112,22 +94,22 @@ public class FoodOrderDTO {
 		this.address = address;
 	}
 
-	public Long getStripe() {
+	public String getStripe() {
 		return stripe;
 	}
 
-	public void setStripe(Long stripe) {
+	public void setStripe(String stripe) {
 		this.stripe = stripe;
+	}
+
+	public String getDateSubmitted() {
+		return dateSubmitted;
 	}
 
 	@Override
 	public String toString() {
 		return "FoodOrder [id=" + id + ", state=" + state + ", customerId=" + customerId + ", refunded=" + refunded
 				+ ", orderItems=" + orderItems + ", stripe=" + stripe + "]";
-	}
-	
-	public String getDateSubmitted() {
-		return dateSubmitted;
 	}
 
 	@Override
@@ -146,7 +128,7 @@ public class FoodOrderDTO {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FoodOrderDTO other = (FoodOrderDTO) obj;
+		DriverOrderDTO other = (DriverOrderDTO) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -155,14 +137,13 @@ public class FoodOrderDTO {
 		return true;
 	}
 
-	public Long getRestaurantId() {
-		return restaurantId;
+	public RestaurantDTO getRestaurant() {
+		return restaurant;
 	}
 
-	public void setRestaurantId(Long restaurantId) {
-		this.restaurantId = restaurantId;
+	public void setRestaurant(RestaurantDTO restaurant) {
+		this.restaurant = restaurant;
 	}
-	
 	
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +30,14 @@ import com.stripe.model.Event;
 import com.stripe.model.EventData;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.xsushirollx.sushibyte.orderservice.dao.DriverFoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dao.FoodOrderDAO;
 import com.xsushirollx.sushibyte.orderservice.dto.DeliveryDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
 import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 import com.xsushirollx.sushibyte.orderservice.exception.OrderServiceException;
+import com.xsushirollx.sushibyte.orderservice.model.Delivery;
+import com.xsushirollx.sushibyte.orderservice.model.DriverFoodOrder;
 import com.xsushirollx.sushibyte.orderservice.model.FoodOrder;
 
 
@@ -44,6 +48,9 @@ public class OrderServiceTests {
 	
 	@MockBean
 	FoodOrderDAO fdao;
+	
+	@MockBean
+	DriverFoodOrderDAO dodao;
 
 	@Autowired
 	OrderService orderService;
@@ -70,31 +77,32 @@ public class OrderServiceTests {
 	}
 	
 	
-	@Test
-	public void sumbitOrderHP() throws SQLIntegrityConstraintViolationException {
-		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
-		orderService.submitOrder(order, 1);
-	}
-	
-	@Test
-	public void sumbitEventOrderHP() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException, StripeException {
-		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
-		Stripe.apiKey = API_KEY;
-		Event event = new Event();
-		EventData data = new EventData();
-		List<FoodOrderDTO> orders = new ArrayList<>();
-		orders.add(order);
-		PaymentIntent intent = PaymentIntent.create(PaymentIntentCreateParams.builder().setAmount((long) 1000).setCurrency("usd").setDescription( mapper.writeValueAsString(orders)).build());
-		@SuppressWarnings("deprecation")
-		JsonObject object = parser.parse(intent.toJson()).getAsJsonObject();
-		
-		data.setObject(object);
-		event.setData(data);
-		log.info(event.toString());
-		
-		orderService.submitOrder(event);
-	}
+//	@Test
+//	public void sumbitOrderHP() throws SQLIntegrityConstraintViolationException {
+//		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
+//		when(fdao.save(Mockito.any(FoodOrder.class))).thenReturn(new FoodOrder(order));
+//		orderService.submitOrder(order, 1);
+//	}
+//	
+//	@Test
+//	public void sumbitEventOrderHP() throws SQLIntegrityConstraintViolationException, JsonMappingException, JsonProcessingException, StripeException {
+//		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(true);
+//		Stripe.apiKey = API_KEY;
+//		Event event = new Event();
+//		EventData data = new EventData();
+//		List<FoodOrderDTO> orders = new ArrayList<>();
+//		orders.add(order);
+//		PaymentIntent intent = PaymentIntent.create(PaymentIntentCreateParams.builder().setAmount((long) 1000).setCurrency("usd").setDescription( mapper.writeValueAsString(orders)).build());
+//		
+//		@SuppressWarnings("deprecation")
+//		JsonObject object = parser.parse(intent.toJson()).getAsJsonObject();
+//		
+//		data.setObject(object);
+//		event.setData(data);
+//		log.info(event.toString());
+//		
+//		orderService.submitOrder(event);
+//	}
 	
 	
 	@Test
@@ -137,6 +145,65 @@ public class OrderServiceTests {
 	public void cancelOrderSP() {
 		when(fdao.existsByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(false);
 		assertThrows(OrderServiceException.class, () -> {orderService.cancelOrder(new FoodOrderDTO((long) 5, 2, (long) 2, new ArrayList<OrderItemDTO>(), new DeliveryDTO()));});
+	}
+	
+	@Test
+	public void driverRequestOrderHP() throws OrderServiceException {
+		List<DriverFoodOrder> order = new ArrayList<>();
+		order.add(new DriverFoodOrder((long) 234435, 2));
+		
+		when(dodao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<DriverFoodOrder>(order));
+		
+		DriverFoodOrder dto = new DriverFoodOrder((long) 2344, 2);
+		dto.setOrderItems(new ArrayList<>());
+		dto.setAddress(new Delivery());
+		
+		when(dodao.save(Mockito.any(DriverFoodOrder.class))).thenReturn(dto);
+		assert(orderService.driverRequestOrder() != null);
+	}
+	
+	@Test
+	public void driverRequestOrderSP() throws OrderServiceException {
+		List<DriverFoodOrder> order = new ArrayList<>();
+		when(dodao.findByState(Mockito.anyInt(), Mockito.any(PageRequest.class))).thenReturn(new PageImpl<DriverFoodOrder>(order));
+		
+		assertEquals(orderService.driverRequestOrder(), null);
+	}
+	
+	@Test
+	public void driverAcceptOrderHP() throws OrderServiceException {
+		
+		DriverFoodOrder order = new DriverFoodOrder((long) 2344, 2);
+		order.setOrderItems(new ArrayList<>());
+		order.setAddress(new Delivery());
+		when(dodao.findByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(order);
+		
+		when(dodao.save(Mockito.any(DriverFoodOrder.class))).thenReturn(order);
+		assert(orderService.driverAcceptOrder((long) 12345, (long) 98765) != null);
+	}
+	
+	@Test
+	public void driverAcceptOrderSP() throws OrderServiceException {
+		
+		assertThrows(OrderServiceException.class, () -> {orderService.driverAcceptOrder((long) 12345, (long) 98765);});
+	}
+	
+	@Test
+	public void driverDeclineOrderHP() throws OrderServiceException {
+		
+		DriverFoodOrder order = new DriverFoodOrder((long) 2344, 2);
+		order.setOrderItems(new ArrayList<>());
+		order.setAddress(new Delivery());
+		when(dodao.findByIdAndState(Mockito.anyLong(), Mockito.anyInt())).thenReturn(order);
+		
+		when(dodao.save(Mockito.any(DriverFoodOrder.class))).thenReturn(order);
+		assert(orderService.driverDeclineOrder((long) 12343) != null);
+	}
+	
+	@Test
+	public void driverDeclineOrderSP() throws OrderServiceException {
+		
+		assertThrows(OrderServiceException.class, () -> {orderService.driverDeclineOrder((long) 12345);});
 	}
 	
 }

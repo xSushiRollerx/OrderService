@@ -76,6 +76,38 @@ public class OrderServiceController {
 		
 		return new ResponseEntity<>(orderService.getAllCustomerOrders(customerId, params), HttpStatus.OK);
 	}
+	
+	@PreAuthorize("hasAnyAuthority('DRIVER', 'ADMINISTRATOR')")
+	@GetMapping(value = "/driver/order")
+	public ResponseEntity<?> driverOrderRequest() {
+		log.log(Level.INFO, "get Start");
+		
+		DriverOrderDTO order = orderService.driverRequestOrder();
+		if (order != null) {
+			return new ResponseEntity<>(order, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("No available orders at this time", HttpStatus.NO_CONTENT);
+		}
+		
+	}
+	
+	@PreAuthorize("(hasAuthority('DRIVER') and principal.id == #driverId) or (hasAuthority('ADMINISTRATOR'))")
+	@PutMapping(value = "/driver/{driverId}/order/{orderId}")
+	public ResponseEntity<DriverOrderDTO> driverOrderAcceptance(@PathVariable("driverId") Long driverId, @PathVariable("orderId") Long orderId) throws OrderServiceException {
+		log.log(Level.INFO, "get Start");
+		
+		return new ResponseEntity<DriverOrderDTO>(orderService.driverAcceptOrder(orderId, driverId), HttpStatus.OK);
+		
+	}
+	
+	@PreAuthorize("hasAnyAuthority('DRIVER', 'ADMINISTRATOR')")
+	@PutMapping(value = "/order/{orderId}")
+	public ResponseEntity<?> driverOrderDecline(@PathVariable("orderId") Long orderId) throws OrderServiceException {
+		log.log(Level.INFO, "get Start");
+		orderService.driverDeclineOrder(orderId);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		
+	}
 
 	// <-------------------------------------------------- SECURITY CONFIG
 	// ---------------------------------------------------------------->
@@ -84,5 +116,7 @@ public class OrderServiceController {
 	@PreAuthorize("(hasAuthority('CUSTOMER') and principal.id == #customerId) or (hasAuthority('ADMINISTRATOR'))")
 	private @interface UpdatePermission {
 	}
+	
+	
 
 }

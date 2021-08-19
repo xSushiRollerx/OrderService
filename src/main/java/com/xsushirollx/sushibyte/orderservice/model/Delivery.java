@@ -37,6 +37,9 @@ public class Delivery {
 	@Column(name = "delivered_time", insertable = false)
 	private String deliveryTime;
 	
+	@Column(name = "driver_id")
+	private Long driverId;
+	
 	@JsonIgnore
 	@OneToOne
     @MapsId
@@ -67,6 +70,7 @@ public class Delivery {
 		this.state = delivery.getState();
 		this.zipCode = delivery.getZipCode();
 		this.deliveryTime = delivery.getDeliveryTime();
+		this.driverId = delivery.getDriverId();
 	}
 
 	public Long getId() {
@@ -115,6 +119,14 @@ public class Delivery {
 
 	public void setDeliveryTime(String deliveryTime) {
 		this.deliveryTime = deliveryTime;
+	}
+
+	public Long getDriverId() {
+		return driverId;
+	}
+
+	public void setDriverId(Long driverId) {
+		this.driverId = driverId;
 	}
 	
 

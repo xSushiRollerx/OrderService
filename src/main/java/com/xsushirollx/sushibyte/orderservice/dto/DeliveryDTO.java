@@ -15,6 +15,8 @@ public class DeliveryDTO {
 	private Integer zipCode;
 
 	private String deliveryTime;
+	
+	private Long driverId;
 
 	public DeliveryDTO(String street, String city, String state, Integer zipCode) {
 		super();
@@ -23,12 +25,14 @@ public class DeliveryDTO {
 		this.state = state;
 		this.zipCode = zipCode;
 	}
+	
 	public DeliveryDTO(Delivery delivery) {
 		this.street = delivery.getStreet();
 		this.city = delivery.getCity();
 		this.state = delivery.getState();
 		this.zipCode = delivery.getZipCode();
 		this.deliveryTime = delivery.getDeliveryTime();
+		this.driverId = delivery.getDriverId();
 	}
 
 	public DeliveryDTO() {}
@@ -81,4 +85,11 @@ public class DeliveryDTO {
 		this.deliveryTime = deliveryTime;
 	}
 
+	public Long getDriverId() {
+		return driverId;
+	}
+
+	public void setDriverId(Long driverId) {
+		this.driverId = driverId;
+	}
 }

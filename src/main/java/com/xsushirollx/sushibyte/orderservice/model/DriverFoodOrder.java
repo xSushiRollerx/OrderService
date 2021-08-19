@@ -1,6 +1,5 @@
 package com.xsushirollx.sushibyte.orderservice.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -9,17 +8,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xsushirollx.sushibyte.orderservice.dto.FoodOrderDTO;
-import com.xsushirollx.sushibyte.orderservice.dto.OrderItemDTO;
 
 @Entity
 @Table(name = "food_order")
-public class FoodOrder {
+public class DriverFoodOrder {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,9 +32,6 @@ public class FoodOrder {
 
 	@Column(name = "is_refunded", insertable = false)
 	private Integer refunded;
-	
-	@Column(name = "restaurant_id", updatable = false)
-	private Long restaurantId;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<OrderItem> orderItems;
@@ -45,6 +40,9 @@ public class FoodOrder {
 	@PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
 	private Delivery address;
 	
+	@OneToOne
+	@JoinColumn(name = "restaurant_id")
+	private Restaurant restaurant;
 
 	@JsonIgnore
 	@Column(name = "stripe", updatable = false)
@@ -53,28 +51,12 @@ public class FoodOrder {
 	@Column(name = "date_submitted", updatable = false, insertable = false)
 	private String dateSubmitted;
 	
-	public FoodOrder() {
+	public DriverFoodOrder() {
 	}
 
-	public FoodOrder(Long id, Integer state) {
+	public DriverFoodOrder(Long id, Integer state) {
 		this.id = id;
 		this.state = state;
-	}
-
-	public FoodOrder(FoodOrderDTO order) {
-		
-		List<OrderItem> orderItems = new ArrayList<OrderItem>();
-		for (OrderItemDTO o : order.getOrderItems()) {
-			orderItems.add(new OrderItem(o));
-		}
-		
-		this.id = order.getId();
-		this.state = order.getState();
-		this.customerId = order.getCustomerId();
-		this.orderItems = orderItems;
-		this.address = new Delivery(order.getAddress());
-		this.restaurantId = order.getRestaurantId();
-		
 	}
 	
 	public Long getId() {
@@ -128,14 +110,6 @@ public class FoodOrder {
 	public String getStripe() {
 		return stripe;
 	}
-	
-	public Long getRestaurantId() {
-		return restaurantId;
-	}
-
-	public void setRestaurantId(Long restaurantId) {
-		this.restaurantId = restaurantId;
-	}
 
 	public void setStripe(String stripe) {
 		this.stripe = stripe;
@@ -167,7 +141,7 @@ public class FoodOrder {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FoodOrder other = (FoodOrder) obj;
+		DriverFoodOrder other = (DriverFoodOrder) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -176,5 +150,12 @@ public class FoodOrder {
 		return true;
 	}
 
+	public Restaurant getRestaurant() {
+		return restaurant;
+	}
+
+	public void setRestaurant(Restaurant restaurant) {
+		this.restaurant = restaurant;
+	}
 
 }
