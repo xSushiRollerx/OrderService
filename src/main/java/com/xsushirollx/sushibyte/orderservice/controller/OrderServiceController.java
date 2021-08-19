@@ -93,14 +93,14 @@ public class OrderServiceController {
 	
 	@PreAuthorize("(hasAuthority('DRIVER') and principal.id == #driverId) or (hasAuthority('ADMINISTRATOR'))")
 	@PutMapping(value = "/driver/{driverId}/order/{orderId}")
-	public ResponseEntity<?> driverOrderAcceptance(@PathVariable("driverId") Long driverId, @PathVariable("orderId") Long orderId) throws OrderServiceException {
+	public ResponseEntity<DriverOrderDTO> driverOrderAcceptance(@PathVariable("driverId") Long driverId, @PathVariable("orderId") Long orderId) throws OrderServiceException {
 		log.log(Level.INFO, "get Start");
 		
-		return new ResponseEntity<>(orderService.driverAcceptOrder(orderId, driverId), HttpStatus.OK);
+		return new ResponseEntity<DriverOrderDTO>(orderService.driverAcceptOrder(orderId, driverId), HttpStatus.OK);
 		
 	}
 	
-	@PreAuthorize("(hasAuthority('DRIVER') and principal.id == #driverId) or (hasAuthority('ADMINISTRATOR'))")
+	@PreAuthorize("hasAnyAuthority('DRIVER', 'ADMINISTRATOR')")
 	@PutMapping(value = "/order/{orderId}")
 	public ResponseEntity<?> driverOrderDecline(@PathVariable("orderId") Long orderId) throws OrderServiceException {
 		log.log(Level.INFO, "get Start");
